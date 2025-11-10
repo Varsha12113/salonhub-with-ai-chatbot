@@ -15,14 +15,21 @@ export default function Login() {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const result = await dispatch(loginUser(formData));
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const result = await dispatch(loginUser(formData));
 
-    if (result.meta.requestStatus === "fulfilled") {
-      navigate("/dashboard");
+  if (result.meta.requestStatus === "fulfilled") {
+    const userRole = result.payload.role; // 'admin' or 'user'
+
+    if (userRole === "admin") {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/user/dashboard");
     }
-  };
+  }
+};
+
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen">

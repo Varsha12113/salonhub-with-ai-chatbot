@@ -1,21 +1,21 @@
 // src/redux/Slice/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { httpPost } from "../../config/httphandler";
 import { saveToStorage, getFromStorage, removeFromStorage } from "../store/storage";
 
-const API_URL = "http://localhost:8000/api/auth";
-
-// ✅ Register User
-export const registerUser = createAsyncThunk(
-  "auth/registerUser",
+// ---------------------------------------------------------
+// 🔹 REGISTER USER
+// ---------------------------------------------------------
+export const registerAdmin = createAsyncThunk(
+  "auth/registerAdmin",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await axios.post("http://localhost:8000/api/register/", formData);
-      console.log( res.data)
-      return res.data;
-      
+      const data = await httpPost("api/auth/admin/register/", formData); // uses API_BASE internally
+      console.log("Registration success:", data);
+      return data;
     } catch (err) {
-      return rejectWithValue(err.response.data);
+      console.error("Registration error:", err);
+      return rejectWithValue(err);
     }
   }
 );
@@ -24,60 +24,101 @@ export const registerUser = createAsyncThunk(
 
 
 
-
+// ---------------------------------------------------------
+// 🔹 LOGIN USER
+// ---------------------------------------------------------
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ username, password }, { rejectWithValue }) => {
     try {
-      const res = await axios.post("http://localhost:8000/api/login/", {
-        username,
-        password,
-      });
-      return res.data;
+      const data = await httpPost("api/auth/login/", { username, password });
+      return data;
     } catch (err) {
-      return rejectWithValue(err.response?.data || "Login failed");
+      console.error("Login error:", err);
+      return rejectWithValue(err);
     }
   }
 );
+// ---------------------------------------------------------
+// 🔹 INITIAL STATE (PERSISTED USER + TOKEN)
+// ---------------------------------------------------------
 
 const storedUser = getFromStorage("user");
 const storedToken = getFromStorage("token");
+const storedRole = getFromStorage("role");
 
 const authSlice = createSlice({
   name: "auth",
   initialState: {
     user: storedUser || null,
     token: storedToken || null,
+    role: storedRole || null,
     loading: false,
     error: null,
   },
+
+  // -------------------------------------------------------
+  // 🔹 NORMAL REDUCERS
+  // -------------------------------------------------------
   reducers: {
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.role = null;
       removeFromStorage("user");
       removeFromStorage("token");
+      removeFromStorage("role");
     },
   },
+
+  // -------------------------------------------------------
+  // 🔹 EXTRA REDUCERS (Async Thunks)
+  // -------------------------------------------------------
   extraReducers: (builder) => {
+    // 🟡 LOGIN
     builder
-      .addCase(loginUser.pending, (state) => {
+  .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
+
+        // ✅ store data correctly
         state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.token = action.payload.tokens.access;
+        state.role = action.payload.role;
+
+        // ✅ persist in localStorage
         saveToStorage("user", action.payload.user);
-        saveToStorage("token", action.payload.token);
+        saveToStorage("token", action.payload.tokens.access);
+        saveToStorage("role", action.payload.role);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || "Login failed";
+      });
+
+    // 🟢 REGISTER
+    builder
+      .addCase(registerAdmin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerAdmin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user || null;
+        state.token = action.payload.token || null;
+      })
+      .addCase(registerAdmin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Registration failed";
       });
   },
 });
 
+// ---------------------------------------------------------
+// 🔹 EXPORTS
+// ---------------------------------------------------------
 export const { logout } = authSlice.actions;
 export default authSlice.reducer;

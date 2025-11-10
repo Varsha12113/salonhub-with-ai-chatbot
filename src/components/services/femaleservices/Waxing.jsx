@@ -119,10 +119,10 @@ export default function Waxing() {
 
       {/* ---------- CALL TO ACTION ---------- */}
       <div className="text-center pb-20">
-        <button className="px-10 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white text-lg font-semibold rounded-full shadow-lg hover:scale-110 hover:shadow-2xl transition-all duration-300 flex items-center gap-2 mx-auto">
+        {/* <button className="px-10 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white text-lg font-semibold rounded-full shadow-lg hover:scale-110 hover:shadow-2xl transition-all duration-300 flex items-center gap-2 mx-auto">
           <FaShoppingCart className="text-lg" />
           Add Services to Cart 💆‍♀️
-        </button>
+        </button> */}
       </div>
     </div>
   );

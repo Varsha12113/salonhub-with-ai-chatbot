@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { registerUser } from "../redux/Slice/authSlice";
+import { registerAdmin } from "../redux/Slice/authSlice";
 import { useNavigate } from "react-router-dom";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
@@ -12,7 +12,8 @@ export default function Register() {
     username: "",
     email: "",
     password: "",
-    password2:""
+    confirm_password: "",
+    phone: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -21,90 +22,70 @@ export default function Register() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-useEffect(() => {
-  setFormData({ name: "", email: "", password: "", password2: "" });
-}, []);
+  useEffect(() => {
+    setFormData({
+      username: "",
+      email: "",
+      password: "",
+      confirm_password: "",
+      phone: "",
+    });
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-  // ✅ Confirm password validation
-  if (formData.password !== formData.password2) {
-    alert("Passwords do not match!");
-    return;
-  }
+    // ✅ Confirm password validation
+    if (formData.password !== formData.confirm_password) {
+      alert("Passwords do not match!");
+      return;
+    }
 
-  // Prepare payload (optional: remove password2)
-  const payload = {
-    username: formData.name,
-    email: formData.email,
-    password: formData.password,
-    password2:formData.password2
+    const payload = {
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      confirm_password: formData.confirm_password,
+      phone: formData.phone,
+    };
+
+    dispatch(registerAdmin(payload))
+      .unwrap()
+      .then(() => {
+        setFormData({
+          username: "",
+          email: "",
+          password: "",
+          confirm_password: "",
+          phone: "",
+        });
+        alert("Registration successful!");
+        navigate("/login");
+      })
+      .catch((err) => alert(err.message || "Registration failed"));
   };
-
-  dispatch(registerUser(payload))
-    .unwrap()
-    .then(() => {
-       setFormData({ name: "", email: "", password: "", password2: "" });
-      alert("Registration successful!");
-      navigate("/login");
-    })
-    .catch((err) => alert(err.message || "Registration failed"));
-  };
-
-  // // ------------------- GOOGLE LOGIN -------------------
-  // useEffect(() => {
-  //   /* global google */
-  //   if (window.google) {
-  //     google.accounts.id.initialize({
-  //       client_id: "YOUR_GOOGLE_CLIENT_ID", // ⬅️ Replace with your Google Client ID
-  //       callback: handleGoogleResponse,
-  //     });
-
-  //     google.accounts.id.renderButton(
-  //       document.getElementById("googleSignUp"),
-  //       { theme: "outline", size: "large", width: "100%" }
-  //     );
-  //   }
-  // }, []);
-
-  // const handleGoogleResponse = async (response) => {
-  //   const token = response.credential;
-  //   console.log("Google JWT Token:", token);
-
-  //   // Optional: send token to backend to register/login user
-  //   // Example:
-  //   // const res = await axios.post("/api/auth/google-register", { token });
-  //   // dispatch(setUser(res.data.user));
-  //   // navigate("/dashboard");
-
-  //   alert("Google signup token received. Implement backend logic next!");
-  // };
-  // // -----------------------------------------------------
 
   return (
     <div
       className="flex items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat transition-all duration-700"
       style={{
-        backgroundImage:
-          "url('')",
+        backgroundImage: "url('')",
       }}
     >
       <div className="bg-white p-8 rounded-2xl shadow-2xl w-96 transform transition-all duration-500 hover:scale-105 animate-fadeIn">
         <h2 className="text-2xl font-bold mb-4 text-center text-blue-600">
           Let’s Create an Account!
         </h2>
-          <p className="text-center text-gray-600 mb-6">
+        <p className="text-center text-gray-600 mb-6">
           Join us and start booking appointments in seconds.
         </p>
-
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
-            name="name"
+            name="username"
             placeholder="Full Name"
-            value={formData.name}
+            value={formData.username}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
             required
@@ -120,37 +101,46 @@ useEffect(() => {
             required
           />
 
-        
-<div className="relative">
-  <input
-    type={showPassword ? "text" : "password"}
-    name="password2"
-    placeholder="Password"
-    value={formData.password2}
-    onChange={handleChange}
-    className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
-    required
-  />
-  <button
-    type="button"
-    onClick={() => setShowPassword(!showPassword)}
-    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-  >
-    {showPassword ? (
-      <AiFillEye size={20} />
-    ) : (
-      <AiFillEyeInvisible size={20} />
-    )}
-  </button>
-</div>
+          <input
+            type="text"
+            name="phone"
+            placeholder="Phone"
+            value={formData.phone}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          />
 
-
+          {/* Password Field */}
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
               name="password"
-              placeholder="Confirm Password"
+              placeholder="Password"
               value={formData.password}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              {showPassword ? (
+                <AiFillEye size={20} />
+              ) : (
+                <AiFillEyeInvisible size={20} />
+              )}
+            </button>
+          </div>
+
+          {/* Confirm Password */}
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="confirm_password"
+              placeholder="Confirm Password"
+              value={formData.confirm_password}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
               required
@@ -184,7 +174,7 @@ useEffect(() => {
           <div className="flex-grow border-t border-gray-300"></div>
         </div>
 
-        {/* Google Sign-In Button */}
+        {/* Google Sign-Up Placeholder */}
         <div id="googleSignUp" className="w-full flex justify-center"></div>
 
         <p className="text-sm text-center mt-4 text-gray-600">
@@ -200,4 +190,3 @@ useEffect(() => {
     </div>
   );
 }
-

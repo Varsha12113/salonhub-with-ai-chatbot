@@ -104,10 +104,10 @@ export default function Hair() {
         <p className="mb-6 text-purple-100">
           Book your appointment today and let our stylists bring out your best look!
         </p>
-        <button className="bg-white text-purple-600 font-semibold px-8 py-3 rounded-full hover:bg-purple-100 transition-all flex items-center gap-2 mx-auto">
+        {/* <button className="bg-white text-purple-600 font-semibold px-8 py-3 rounded-full hover:bg-purple-100 transition-all flex items-center gap-2 mx-auto">
           <FaShoppingCart className="text-lg" />
           Add to Cart
-        </button>
+        </button> */}
       </div>
     </div>
   );

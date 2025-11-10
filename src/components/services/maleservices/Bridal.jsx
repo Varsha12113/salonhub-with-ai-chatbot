@@ -160,10 +160,10 @@ export default function MaleBridal() {
             ))}
           </div>
 
-          <button className="mt-12 px-10 py-3 text-lg font-semibold text-white bg-gradient-to-r from-purple-500 to-purple-600 rounded-full shadow-lg hover:scale-110 hover:shadow-2xl transition-all duration-300 flex items-center gap-2 mx-auto">
+          {/* <button className="mt-12 px-10 py-3 text-lg font-semibold text-white bg-gradient-to-r from-purple-500 to-purple-600 rounded-full shadow-lg hover:scale-110 hover:shadow-2xl transition-all duration-300 flex items-center gap-2 mx-auto">
             <FaShoppingCart className="text-lg" />
             Add Grooming Package to Cart 💍
-          </button>
+          </button> */}
         </div>
       </div>
     </div>
