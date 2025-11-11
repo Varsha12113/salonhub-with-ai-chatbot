@@ -29,6 +29,12 @@ import Contact from "./pages/Contact.jsx";
 import Booking from "./pages/Booking/Booking.jsx";
 import Services from "./pages/Services.jsx";
 import HairMale from "./components/services/maleservices/HairMale.jsx";
+import UserPanel from "./pages/User/UserPanel.jsx";
+import UserDashboard from "./pages/User/UserDashboard.jsx";
+import AdminOrders from "./pages/admin/AdminOrders.jsx";
+import AdminCustomers from "./pages/admin/AdminCustomers.jsx";
+import AdminServices from "./pages/admin/AdminServices.jsx";
+import AdminAnalytics from "./pages/admin/AdminAnalytics.jsx";
 
 export default function App() {
   return (
@@ -81,6 +87,19 @@ export default function App() {
               <Route path="appointments" element={<Appointments />} />
               <Route path="add-provider" element={<AddProvider />} />
               <Route path="providers" element={<ProviderList />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="customers" element={<AdminCustomers />} />
+              <Route path="services" element={<AdminServices />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
+            </Route>
+          </Route>
+                    {/* =============================
+              ✅ Protected user Routes
+          ============================= */}
+          <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
+            <Route path="/user" element={<UserPanel />}>
+              <Route index element={<UserDashboard />} />
+              <Route path="dashboard" element={<UserDashboard />} />
             </Route>
           </Route>
         </Route>
