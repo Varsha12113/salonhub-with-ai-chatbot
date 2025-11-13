@@ -12,6 +12,7 @@ const Navbar = () => {
   const [subDropdownOpen, setSubDropdownOpen] = useState(null);
   const [cartCount, setCartCount] = useState(() => getCartCount());
   const [drawerOpen, setDrawerOpen] = useState(false);
+  
 
   const toggleDropdown = (menu) => {
     setDropdownOpen(dropdownOpen === menu ? null : menu);
@@ -34,7 +35,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         {/* ---------- Logo ---------- */}
         <Link to="/" className="text-2xl font-bold text-gray-800">
-          Salon<span className="text-purple-500">Style</span>
+          Glowup<span className="text-purple-500">Salon</span>
         </Link>
 
         {/* ---------- Desktop Menu ---------- */}
@@ -44,134 +45,168 @@ const Navbar = () => {
               Home
             </Link>
           </li>
+{/* ---------- Services Dropdown ---------- */}
 
-          {/* ---------- Services Dropdown ---------- */}
-          <li className="relative group">
-            <div
-              onClick={() => toggleDropdown("services")}
-              className="flex items-center gap-1 cursor-pointer hover:text-purple-500 relative"
+<li className="relative group">
+  <div
+    onClick={() => toggleDropdown("services")}
+    className="flex items-center gap-1 cursor-pointer hover:text-purple-500 relative"
+  >
+    Services <ChevronDown size={16} />
+  </div>
+
+  {dropdownOpen === "services" && (
+    <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[90vw] max-w-[500px] 
+bg-white shadow-lg rounded-2xl border-[0.5px] border-gray-200 p-3 z-50
+before:content-[''] before:absolute before:top-[-6px] before:left-1/2 before:-translate-x-1/2 
+before:w-2.5 before:h-2.5 before:bg-white before:rotate-45 before:border-t-[0.5px] before:border-l-[0.5px] before:border-gray-200">
+
+
+      {/* STEP 1: Select Gender */}
+      {!subDropdownOpen && (
+  <div className="grid grid-cols-2 gap-2 text-center">
+    <div
+      onClick={() => setSubDropdownOpen("female")}
+      className="cursor-pointer bg-purple-50 hover:bg-purple-100 transition p-1.5 rounded-md flex flex-col items-center"
+    >
+      <FaFemale className="text-lg text-purple-500 mb-1" />
+      <span className="text-xs font-medium text-gray-700">Female</span>
+    </div>
+    <div
+      onClick={() => setSubDropdownOpen("male")}
+      className="cursor-pointer bg-blue-50 hover:bg-blue-100 transition p-1.5 rounded-md flex flex-col items-center"
+    >
+      <FaMale className="text-lg text-blue-500 mb-1" />
+      <span className="text-xs font-medium text-gray-700">Male</span>
+    </div>
+  </div>
+)}
+
+      
+
+      {/* STEP 2: Show Female Services */}
+      {subDropdownOpen === "female" && (
+        <div className="flex flex-col gap-1.5">
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="text-xs font-semibold text-gray-600 flex items-center gap-2">
+              <FaFemale className="text-purple-500" /> Female Services
+            </h4>
+            <button
+              className="text-xs text-gray-500 hover:text-purple-600"
+              onClick={() => setSubDropdownOpen(null)}
             >
-              Services <ChevronDown size={16} />
-            </div>
+              ← Back
+            </button>
+          </div>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <li>
+              <Link
+                to="/services/female/hair"
+                onClick={() => setDropdownOpen(null)}
+                className="flex items-center gap-3 p-2 rounded hover:bg-purple-50 transition"
+              >
+                <FaCut className="text-purple-500" />
+                Hair Care
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/services/female/makeup"
+                onClick={() => setDropdownOpen(null)}
+                className="flex items-center gap-3 p-2 rounded hover:bg-purple-50 transition"
+              >
+                <FaPaintBrush className="text-purple-500" />
+                Skin Care
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/services/female/waxing"
+                onClick={() => setDropdownOpen(null)}
+                className="flex items-center gap-3 p-2 rounded hover:bg-purple-50 transition"
+              >
+                <FaSpa className="text-purple-500" />
+                Body Care
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/services/female/bridal"
+                onClick={() => setDropdownOpen(null)}
+                className="flex items-center gap-3 p-2 rounded hover:bg-purple-50 transition"
+              >
+                <FaGem className="text-purple-500" />
+                Bridal
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
 
-            {dropdownOpen === "services" && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[880px] bg-white shadow-2xl rounded-xl border border-gray-100 p-6 z-50">
-                <div className="grid grid-cols-12 gap-6">
-                  {/* Female column */}
-                  <div className="col-span-5">
-                    <h4 className="text-sm font-semibold text-gray-600 mb-3 flex items-center gap-2"><FaFemale /> Female Services</h4>
-                    <ul className="space-y-2">
-                      <li>
-                        <Link to="/services/female/hair" onClick={() => setDropdownOpen(null)} className="flex items-start gap-3 p-2 rounded hover:bg-purple-50">
-                          <FaCut className="text-purple-500 mt-1" />
-                          <div>
-                            <div className="font-medium">Hair</div>
-                            <div className="text-xs text-gray-500">Cuts, coloring & styling</div>
-                          </div>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to="/services/female/makeup" onClick={() => setDropdownOpen(null)} className="flex items-start gap-3 p-2 rounded hover:bg-purple-50">
-                          <FaPaintBrush className="text-purple-500 mt-1" />
-                          <div>
-                            <div className="font-medium">Makeup</div>
-                            <div className="text-xs text-gray-500">Bridal & party makeup</div>
-                          </div>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to="/services/female/waxing" onClick={() => setDropdownOpen(null)} className="flex items-start gap-3 p-2 rounded hover:bg-purple-50">
-                          <FaSpa className="text-purple-500 mt-1" />
-                          <div>
-                            <div className="font-medium">Waxing</div>
-                            <div className="text-xs text-gray-500">Face, body & bikini</div>
-                          </div>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to="/services/female/manicure-pedicure" onClick={() => setDropdownOpen(null)} className="flex items-start gap-3 p-2 rounded hover:bg-purple-50">
-                          <FaGem className="text-purple-500 mt-1" />
-                          <div>
-                            <div className="font-medium">Manicure & Pedicure</div>
-                            <div className="text-xs text-gray-500">Nail care & polish</div>
-                          </div>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to="/services/female/bridal" onClick={() => setDropdownOpen(null)} className="flex items-start gap-3 p-2 rounded hover:bg-purple-50">
-                          <FaGem className="text-purple-500 mt-1" />
-                          <div>
-                            <div className="font-medium">Bridal</div>
-                            <div className="text-xs text-gray-500">Complete bridal packages</div>
-                          </div>
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
+      {/* STEP 3: Show Male Services */}
+      {subDropdownOpen === "male" && (
+        <div className="flex flex-col gap-1.5">
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="text-xs font-semibold text-gray-600 flex items-center gap-2">
+              <FaMale className="text-blue-500" /> Male Services
+            </h4>
+            <button
+              className="text-xs text-gray-500 hover:text-purple-600"
+              onClick={() => setSubDropdownOpen(null)}
+            >
+              ← Back
+            </button>
+          </div>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <li>
+              <Link
+                to="/services/male/hair"
+                onClick={() => setDropdownOpen(null)}
+                className="flex items-center gap-3 p-2 rounded hover:bg-purple-50 transition"
+              >
+                <FaCut className="text-purple-500" />
+                Hair Care
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/services/male/facial"
+                onClick={() => setDropdownOpen(null)}
+                className="flex items-center gap-3 p-2 rounded hover:bg-purple-50 transition"
+              >
+                <FaPaintBrush className="text-purple-500" />
+                Skin Care
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/services/male/manicure-pedicure"
+                onClick={() => setDropdownOpen(null)}
+                className="flex items-center gap-3 p-2 rounded hover:bg-purple-50 transition"
+              >
+                <FaSpa className="text-purple-500" />
+                Body Care
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/services/male/bridal"
+                onClick={() => setDropdownOpen(null)}
+                className="flex items-center gap-3 p-2 rounded hover:bg-purple-50 transition"
+              >
+                <FaGem className="text-purple-500" />
+                Bridal (Groom)
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
+    </div>
+  )}
+</li>
 
-                  {/* Male column */}
-                  <div className="col-span-5">
-                    <h4 className="text-sm font-semibold text-gray-600 mb-3 flex items-center gap-2"><FaMale /> Male Services</h4>
-                    <ul className="space-y-2">
-                      <li>
-                        <Link to="/services/male/hair" onClick={() => setDropdownOpen(null)} className="flex items-start gap-3 p-2 rounded hover:bg-purple-50">
-                          <FaCut className="text-purple-500 mt-1" />
-                          <div>
-                            <div className="font-medium">Hair</div>
-                            <div className="text-xs text-gray-500">Cuts & styling</div>
-                          </div>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to="/services/male/facial" onClick={() => setDropdownOpen(null)} className="flex items-start gap-3 p-2 rounded hover:bg-purple-50">
-                          <FaSpa className="text-purple-500 mt-1" />
-                          <div>
-                            <div className="font-medium">Facial</div>
-                            <div className="text-xs text-gray-500">Skin treatments</div>
-                          </div>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to="/services/male/beard-trim" onClick={() => setDropdownOpen(null)} className="flex items-start gap-3 p-2 rounded hover:bg-purple-50">
-                          <FaGem className="text-purple-500 mt-1" />
-                          <div>
-                            <div className="font-medium">Beard Trim</div>
-                            <div className="text-xs text-gray-500">Shaping & grooming</div>
-                          </div>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to="/services/male/manicure-pedicure" onClick={() => setDropdownOpen(null)} className="flex items-start gap-3 p-2 rounded hover:bg-purple-50">
-                          <FaGem className="text-purple-500 mt-1" />
-                          <div>
-                            <div className="font-medium">Manicure & Pedicure</div>
-                            <div className="text-xs text-gray-500">Hand & foot care</div>
-                          </div>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to="/services/male/bridal" onClick={() => setDropdownOpen(null)} className="flex items-start gap-3 p-2 rounded hover:bg-purple-50">
-                          <FaCut className="text-purple-500 mt-1" />
-                          <div>
-                            <div className="font-medium">Bridal (Groom)</div>
-                            <div className="text-xs text-gray-500">Groom packages</div>
-                          </div>
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
 
-                  {/* Promo / CTA */}
-                  <div className="col-span-2 flex flex-col items-center justify-center bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4">
-                    <div className="text-sm font-semibold text-purple-600 mb-2">Featured</div>
-                    <div className="font-bold text-lg mb-2">Summer Glow Pack</div>
-                    <p className="text-xs text-gray-600 mb-4 text-center">Save 20% on combined hair + facial packages. Limited time.</p>
-                    <Link to="/services" onClick={() => setDropdownOpen(null)} className="px-3 py-2 bg-purple-500 text-white rounded">Explore all services</Link>
-                  </div>
-                </div>
-              </div>
-            )}
-          </li>
+
 
           <li>
             <Link to="/about" className="hover:text-purple-500 transition">
@@ -253,7 +288,7 @@ const Navbar = () => {
                         className="hover:text-purple-500 block"
                         onClick={() => setMenuOpen(false)}
                       >
-                        Hair
+                        Hair care
                       </Link>
                     </li>
                     <li>
@@ -262,7 +297,7 @@ const Navbar = () => {
                         className="hover:text-purple-500 block"
                         onClick={() => setMenuOpen(false)}
                       >
-                        Beard Trim
+                        
                       </Link>
                     </li>
                     <li>

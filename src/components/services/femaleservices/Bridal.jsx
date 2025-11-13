@@ -5,29 +5,53 @@ import { useNavigate } from 'react-router-dom';
 
 const bridalPackages = [
   {
-    name: "Royal Bridal Package",
+    name: "Bridal Hair Styling",
     price: "₹18,000",
     description:
-      "Includes HD bridal makeup, hair styling, draping, facial, and manicure-pedicure. Designed for the queen on her big day.",
+      "Our expert hairstylists are skilled in creating a wide range of bridal hairstyles, from classic updos to romantic braids and glamorous curls. We work closely with you to understand your vision and complement your wedding dress and overall theme.",
     image:
-      "https://images.unsplash.com/photo-1737515045459-365999ac9da0?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjJ8fHJveWFsJTIwYnJpZGUlMjBtYWtldXB8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600",
+      "https://images.unsplash.com/photo-1581674210501-c760093514e8?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8YnJpZGFsJTIwaGFpciUyMHN0eWxpbmd8ZW58MHx8MHx8fDA%3D"
   },
   {
-    name: "Classic Bridal Look",
+    name: "Bridal Makeup",
     price: "₹12,000",
     description:
-      "Elegant and timeless bridal makeup with natural tones and flawless finish, perfect for traditional ceremonies.",
+      "Our professional makeup artists specialize in bridal makeup, using high-quality products to achieve a flawless and long-lasting look. Whether you want a natural, radiant glow or a bold and dramatic style, we customize the makeup to enhance your best features.",
     image:
-      "https://images.unsplash.com/photo-1737515016978-267573216449?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687",
+    "https://images.unsplash.com/photo-1737515046830-1680d82e043c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OTR8fG1ha2V1cCUyMGFydGlzdCUyMGJyaWRhbHxlbnwwfHwwfHx8MA%3D%3D",
   },
   {
-    name: "Luxury HD Bridal Glam",
+    name: "Pre-Wedding Hair and Skin Consultation",
     price: "₹22,000",
     description:
-      "High-definition bridal makeup using luxury products for a picture-perfect, radiant look all day long.",
+      "We offer pre-wedding consultations to discuss your hair and skin needs. Our experts will suggest suitable hair treatments and skincare routines to ensure your hair and skin are in their best condition for the big day.",
     image:
-      "https://media.istockphoto.com/id/2187544756/photo/beautiful-stunning-indian-bride-in-traditional-bridal-red-lehenga-with-heavy-jewelry.jpg?s=2048x2048&w=is&k=20&c=HLmFXJ5x8FZskpnW4gSM_ue3_LAkWYLJ3VYssDkQKW0=",
+      "https://plus.unsplash.com/premium_photo-1661771751574-1c3648849008?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8bWFrZXVwJTIwYXJ0aXN0fGVufDB8fDB8fHww"
   },
+    {
+    name: "Bridal Party Services",
+    price: "₹18,000",
+    description:
+      "We can also accommodate your bridal party, including bridesmaids, mothers of the bride and groom, and other guests. We offer hair and makeup services to ensure everyone looks their best for the wedding celebration.",
+    image:
+      "https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTB8fGJyaWRlfGVufDB8fDB8fHww",
+  },
+  {
+    name: "Bridal Spa Packages",
+    price: "₹12,000",
+    description:
+      "Treat yourself to some pre-wedding relaxation with our bridal spa packages. Enjoy massages, facials, body treatments, and more to destress and rejuvenate before your special day.",
+    image:
+      "https://plus.unsplash.com/premium_photo-1683134297492-cce5fc6dae31?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8c3BhfGVufDB8fDB8fHww",
+  },
+  {
+    name: "On-Site Services",
+    price: "₹22,000",
+    description:
+      "If preferred, we can arrange to provide our bridal services on-site at your wedding venue or getting-ready location, ensuring a stress-free and convenient experience for you and your bridal party.",
+    image:
+      "https://images.unsplash.com/photo-1638628064365-f08ad0ec8245?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mzh8fG1ha2V1cCUyMGFydGlzdHxlbnwwfHwwfHx8MA%3D%3D"
+  }
 ];
 
 const addOns = [
@@ -35,6 +59,7 @@ const addOns = [
   { name: "Hair Spa & Treatment", price: "₹2,500" },
   { name: "Full Body Polishing", price: "₹3,500" },
   { name: "Luxury Nail Art", price: "₹2,000" },
+ 
 ];
 
 export default function Bridal() {

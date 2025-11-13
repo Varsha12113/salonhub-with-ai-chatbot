@@ -5,39 +5,39 @@ import { FaShoppingCart } from "react-icons/fa";
 
 const makeupServices = [
   {
-    name: "Bridal Makeup",
+    name: "Customized Facials",
     price: "₹12,000",
     description:
-      "Complete bridal package with HD finish, hairstyle, and premium accessories.",
+      "Our customized facials are tailored to your skin type and specific concerns. Whether you have dry skin, oily skin, acne-prone skin, or mature skin, our estheticians will assess your needs and create a facial treatment to cleanse, exfoliate, and hydrate your skin, leaving it refreshed and rejuvenated..",
   },
   {
-    name: "Party Makeup",
+    name: "Detan",
     price: "₹3,000",
-    description: "Perfect for parties, evening events, and celebrations.",
+    description: "At Glowup, our facial options cater to all skin types. We use minerals and nutrient-rich products that reduce spots and wrinkles, remove dead skin, and give the skin a youthful appearance. Black mud, fruity elements, vitamins, enzymes, gold, and anti-oxidants play a vital role in our facial ingredients.",
   },
   {
-    name: "Engagement Makeup",
+    name: "Gentle Exfoliation",
     price: "₹6,000",
     description:
-      "Elegant, camera-ready look for your special pre-wedding ceremonies.",
+      "We perform gentle exfoliation to remove dead skin cells and promote cell turnover, revealing a smoother and brighter complexion..",
   },
   {
-    name: "Natural Look Makeup",
+    name: "Hydrating and Nourishing Treatments",
     price: "₹2,000",
     description:
-      "Soft, minimal makeup designed for a natural glowing finish.",
+      "For dry or dehydrated skin, we offer treatments that focus on providing deep hydration and nourishment to restore your skin's moisture balance.",
   },
   {
-    name: "Airbrush Makeup",
+    name: "Face Mask",
     price: "₹8,000",
     description:
-      "Flawless, long-lasting airbrush makeup for a luxury look.",
+      "we offer a luxurious and rejuvenating experience with our customized facial masks designed to tackle various skin concerns for all skin types. Our team of skilled estheticians is dedicated to providing you with the ultimate pampering session, leaving your skin refreshed, nourished, and glowing.",
   },
   {
-    name: "Photoshoot Makeup",
+    name: " Face cleanup",
     price: "₹5,000",
     description:
-      "Professional makeup for model, portfolio, or editorial shoots.",
+      " goal is to help you achieve healthy, radiant skin that boosts your confidence and enhances your natural beauty. Whether you're looking for a relaxing facial or need specific solutions for skin concerns, our team is dedicated to providing the best possible care and results for your skin..",
   },
 ];
 
@@ -48,7 +48,7 @@ export default function Makeup() {
       {/* ---------- HERO SECTION ---------- */}
       <div className="relative text-center py-20 bg-gradient-to-r from-purple-600 via-purple-400 to-purple-500 shadow-lg">
         <h1 className="text-5xl font-bold text-white drop-shadow-xl mb-4">
-          Makeup Services
+          Skin care Services
         </h1>
         <p className="text-white text-lg max-w-2xl mx-auto">
           Experience the art of beauty with our luxury salon-grade makeup

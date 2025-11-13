@@ -36,7 +36,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="space-y-6">
+   <div className="space-y-6 pt-16 md:pt-0 px-4 sm:px-6 lg:px-8">
       {/* ===== Page Header ===== */}
       <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
 
@@ -78,12 +78,13 @@ export default function AdminDashboard() {
 
       {/* ===== Main Content Section ===== */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* ===== Recent Bookings ===== */}
-        <div className="lg:col-span-8 bg-white p-5 rounded-2xl shadow-md">
+    {/* ===== Recent Bookings ===== */}
+        <div className="lg:col-span-8 bg-white p-5 rounded-2xl shadow-md overflow-x-auto">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             Recent Bookings
           </h2>
-          <table className="w-full text-sm text-left text-gray-600">
+
+          <table className="min-w-[600px] w-full text-sm text-left text-gray-600">
             <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
               <tr>
                 <th className="px-4 py-3">Customer</th>
@@ -93,6 +94,7 @@ export default function AdminDashboard() {
                 <th className="px-4 py-3 text-center">Action</th>
               </tr>
             </thead>
+
             <tbody>
               {[
                 { name: "Alice Johnson", service: "Hair Spa", date: "10 Nov 2025", status: "Approved" },
@@ -100,10 +102,10 @@ export default function AdminDashboard() {
                 { name: "Riya Patel", service: "Haircut", date: "9 Nov 2025", status: "Delivered" },
               ].map((b, i) => (
                 <tr key={i} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-3">{b.name}</td>
-                  <td className="px-4 py-3">{b.service}</td>
-                  <td className="px-4 py-3">{b.date}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 whitespace-nowrap">{b.name}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{b.service}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{b.date}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-medium ${
                         b.status === "Approved"
@@ -116,7 +118,7 @@ export default function AdminDashboard() {
                       {b.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-center text-purple-600 hover:underline cursor-pointer">
+                  <td className="px-4 py-3 text-center text-purple-600 hover:underline cursor-pointer whitespace-nowrap">
                     Details
                   </td>
                 </tr>
@@ -124,6 +126,7 @@ export default function AdminDashboard() {
             </tbody>
           </table>
         </div>
+
 
         {/* ===== Updates Section ===== */}
         <div className="lg:col-span-4 bg-white p-5 rounded-2xl shadow-md">

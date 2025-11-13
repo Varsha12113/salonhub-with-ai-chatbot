@@ -104,7 +104,7 @@ const Footer = () => {
         {/* ---------- Logo & Info ---------- */}
         <div>
           <h2 className="text-2xl font-bold text-white mb-3">
-            Glow<span className="text-purple-400">Salon</span>
+            Glowup<span className="text-purple-400">Salon</span>
           </h2>
           <p className="text-gray-400">
             Experience luxury styling with expert professionals and top-quality
