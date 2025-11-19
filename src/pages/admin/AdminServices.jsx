@@ -203,305 +203,338 @@ export default function AdminServices() {
   // ---------------------------------------------------------------------
 
   return (
-    <div className="container py-4">
+   <div className="container py-4">
 
-      {/* Title */}
-      <h2 className="fw-bold mb-4 text-gradient">
-        Admin — Manage Services
-      </h2>
+  {/* Title */}
+  <h2 className="fw-bold mb-5 text-gradient display-6">
+    Admin — Manage Services
+  </h2>
 
-      <style>{`
-        .text-gradient {
-          background: linear-gradient(45deg, #5b2cff, #b72cff);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-        .premium-card {
-          backdrop-filter: blur(10px);
-          border-radius: 18px;
-          border: 1px solid rgba(255,255,255,0.3);
-          background: rgba(255,255,255,0.8);
-          transition: transform .2s;
-        }
-        .premium-card:hover {
-          transform: translateY(-3px);
-        }
-        .premium-header {
-          background: linear-gradient(120deg, #5b2cff, #8b2cff);
-          color: white !important;
-          border-radius: 18px 18px 0 0;
-        }
-        .premium-header-secondary {
-          background: linear-gradient(120deg, #2c6dff, #2cf8ff);
-          color: white !important;
-          border-radius: 18px 18px 0 0;
-        }
-        .table-premium thead {
-          background: #f4f1ff;
-        }
-      `}</style>
+ <style>{`
+  /* ----------------- Buttons ----------------- */
+  .btn-purple {
+    background-color: #8b2cff;
+    border: 1px solid #6e1fcc;
+    color: white;
+    border-radius: 6px;
+    padding: 0.75rem; /* same size for all buttons */
+    font-size: 1rem;
+    width: 100%; /* full width */
+  }
+  .btn-purple:hover {
+    background-color: #a34dff;
+    border-color: #8b2cff;
+    color: white;
+  }
 
-      <div className="row g-4">
+  .btn-info-purple {
+    background-color: #5b2cff;
+    border: 1px solid #4a1fcc;
+    color: white;
+    border-radius: 6px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    width: 100%;
+  }
+  .btn-info-purple:hover {
+    background-color: #7d4dff;
+    border-color: #5b2cff;
+  }
 
-        {/* ---------------- MAIN SERVICES CARD ---------------- */}
-        <div className="col-lg-6">
-          <div className="card premium-card shadow">
+  .btn-outline-purple {
+    color: #8b2cff;
+    border: 1px solid #8b2cff;
+    border-radius: 6px;
+    width: 100%;
+  }
+  .btn-outline-purple:hover {
+    background-color: #f0e0ff;
+    color: #8b2cff;
+  }
 
-            <div className="card-header premium-header d-flex justify-content-between">
-              <h5 className="mb-0 fw-bold">Main Services</h5>
+  /* ----------------- Form Fields ----------------- */
+  .premium-card .form-control,
+  .premium-card .form-select,
+  .premium-card textarea {
+    border: 1px solid #8b2cff;
+    border-radius: 6px;
+    margin-bottom: 1rem; /* spacing between fields */
+    padding: 0.5rem;
+    width: 100%;
+  }
 
-              <button
-                className="btn btn-light btn-sm fw-semibold"
-                onClick={() => {
-                  setIsEditingMain(false);
-                  setEditingMainId(null);
-                  setMainForm({ main_services_name: "", main_services_description: "", gender: "" });
-                }}
-              >
-                Reset
-              </button>
-            </div>
+  .premium-card .form-control:focus,
+  .premium-card .form-select:focus,
+  .premium-card textarea:focus {
+    border-color: #6e1fcc;
+    box-shadow: 0 0 0 0.2rem rgba(139,44,255,0.25);
+    outline: none;
+  }
+`}</style>
 
-            <div className="card-body">
 
-              {/* FORM */}
-              <form onSubmit={submitMain} className="mb-3">
-                
-                <label className="form-label fw-semibold">Service Name</label>
-                <input
-                  name="main_services_name"
-                  className="form-control form-control-lg mb-3"
-                  value={mainForm.main_services_name}
-                  onChange={onMainChange}
-                />
+  <div className="row g-4">
 
-                <label className="form-label fw-semibold">Description</label>
-                <textarea
-                  name="main_services_description"
-                  className="form-control mb-3"
-                  rows={2}
-                  value={mainForm.main_services_description}
-                  onChange={onMainChange}
-                />
+    {/* Main Services Card */}
+    <div className="col-lg-6">
+      <div className="card premium-card shadow">
 
-                <label className="form-label fw-semibold">Gender</label>
-                <select
-                  name="gender"
-                  className="form-select mb-3"
-                  value={mainForm.gender}
-                  onChange={onMainChange}
-                >
-                  <option value="">Select gender</option>
-                  {genders.map((g) => (
-                    <option key={g.id} value={g.id}>
-                      {g.name}
-                    </option>
-                  ))}
-                </select>
-
-                <button className="btn btn-primary w-100 btn-lg shadow-sm">
-                  {isEditingMain ? "Update Main Service" : "Add Main Service"}
-                </button>
-              </form>
-
-              {/* TABLE */}
-              <div className="table-responsive">
-                <table className="table table-premium table-hover align-middle rounded-3 overflow-hidden">
-                  <thead>
-                    <tr className="text-center fw-semibold">
-                      <th>ID</th>
-                      <th>Name</th>
-                      <th>Gender</th>
-                      <th className="text-end">Actions</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {mainServices.length === 0 ? (
-                      <tr>
-                        <td colSpan="4" className="text-center py-3 text-muted">
-                          No main services found
-                        </td>
-                      </tr>
-                    ) : (
-                      mainServices.map((m) => (
-                        <tr key={m.id}>
-                          <td className="text-center">{m.id}</td>
-                          <td>{m.main_services_name}</td>
-                          <td>{m.gender}</td>
-
-                          <td className="text-end">
-                            <button
-                              className="btn btn-outline-primary btn-sm me-2"
-                              onClick={() => startEditMain(m)}
-                            >
-                              <Edit size={14} /> Edit
-                            </button>
-
-                            <button
-                              className="btn btn-outline-danger btn-sm"
-                              onClick={() => removeMain(m.id)}
-                            >
-                              <Trash2 size={14} /> Delete
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+        <div className="card-header premium-header d-flex justify-content-between align-items-center">
+          <h5 className="mb-0 fw-bold">Main Services</h5>
+          <button
+            className="btn btn-light btn-sm fw-semibold"
+            onClick={() => {
+              setIsEditingMain(false);
+              setEditingMainId(null);
+              setMainForm({ main_services_name: "", main_services_description: "", gender: "" });
+            }}
+          >
+            Reset
+          </button>
         </div>
 
-        {/* ---------------- CHILD SERVICES CARD ---------------- */}
-        <div className="col-lg-6">
-          <div className="card premium-card shadow">
+        <div className="card-body">
+          {/* Form */}
+          <form onSubmit={submitMain} className="mb-4 p-3 rounded">
 
-            <div className="card-header premium-header-secondary d-flex justify-content-between align-items-center">
-              <h5 className="mb-0 fw-bold">Child Services</h5>
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Service Name</label>
+              <input
+                name="main_services_name"
+                className="form-control form-control-lg"
+                placeholder="Enter service name"
+                value={mainForm.main_services_name}
+                onChange={onMainChange}
+              />
+            </div>
 
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Description</label>
+              <textarea
+                name="main_services_description"
+                className="form-control"
+                rows={3}
+                placeholder="Enter description"
+                value={mainForm.main_services_description}
+                onChange={onMainChange}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Gender</label>
               <select
-                className="form-select form-select-sm w-auto"
-                value={selectedMainId}
-                onChange={(e) => setSelectedMainId(e.target.value)}
+                name="gender"
+                className="form-select"
+                value={mainForm.gender}
+                onChange={onMainChange}
               >
-                <option value="">Select Main</option>
-                {mainServices.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.main_services_name}
+                <option value="">Select gender</option>
+                {genders.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
                   </option>
                 ))}
               </select>
             </div>
 
-            <div className="card-body">
+            <button className="btn btn-primary w-100 btn-lg shadow-sm">
+              {isEditingMain ? "Update Main Service" : "Add Main Service"}
+            </button>
+          </form>
 
-              <form onSubmit={submitChild} className="mb-3">
-
-                <label className="form-label fw-semibold">Child Name</label>
-                <input
-                  name="child_service_name"
-                  className="form-control form-control-lg mb-3"
-                  value={childForm.child_service_name}
-                  onChange={onChildChange}
-                />
-
-                <label className="form-label fw-semibold">Description</label>
-                <textarea
-                  name="child_service_description"
-                  className="form-control mb-3"
-                  rows={2}
-                  value={childForm.child_service_description}
-                  onChange={onChildChange}
-                />
-
-                <div className="row">
-                  <div className="col-6">
-                    <label className="form-label fw-semibold">Price</label>
-                    <input
-                      name="price"
-                      type="number"
-                      className="form-control mb-3"
-                      value={childForm.price}
-                      onChange={onChildChange}
-                    />
-                  </div>
-
-                  <div className="col-6">
-                    <label className="form-label fw-semibold">Duration (min)</label>
-                    <input
-                      name="duration"
-                      type="number"
-                      className="form-control mb-3"
-                      value={childForm.duration}
-                      onChange={onChildChange}
-                    />
-                  </div>
-                </div>
-
-                <label className="form-label fw-semibold">Main Service</label>
-                <select
-                  name="main_services"
-                  className="form-select mb-3"
-                  value={childForm.main_services}
-                  onChange={onChildChange}
-                >
-                  <option value="">Choose</option>
-                  {mainServices.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.main_services_name}
-                    </option>
-                  ))}
-                </select>
-
-                <button className="btn btn-info w-100 btn-lg shadow-sm">
-                  {isEditingChild ? "Update Child Service" : "Add Child Service"}
-                </button>
-              </form>
-
-              {/* CHILD TABLE */}
-              <div className="table-responsive">
-                <table className="table table-premium table-hover align-middle">
-                  <thead>
-                    <tr className="text-center fw-semibold">
-                      <th>ID</th>
-                      <th>Name</th>
-                      <th>Price</th>
-                      <th>Duration</th>
-                      <th className="text-end">Actions</th>
+          {/* Table */}
+          <div className="table-responsive">
+            <table className="table table-premium table-hover align-middle rounded-3 overflow-hidden">
+              <thead>
+                <tr className="text-center">
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Gender</th>
+                  <th className="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mainServices.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="text-center py-3 text-muted">
+                      No main services found
+                    </td>
+                  </tr>
+                ) : (
+                  mainServices.map((m) => (
+                    <tr key={m.id}>
+                      <td className="text-center">{m.id}</td>
+                      <td>{m.main_services_name}</td>
+                      <td>{m.gender}</td>
+                      <td className="text-end">
+                        <button
+                          className="btn btn-outline-primary btn-sm me-2"
+                          onClick={() => startEditMain(m)}
+                        >
+                          <Edit size={14} /> Edit
+                        </button>
+                        <button
+                          className="btn btn-outline-danger btn-sm"
+                          onClick={() => removeMain(m.id)}
+                        >
+                          <Trash2 size={14} /> Delete
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-
-                  <tbody>
-                    {!selectedMainId ? (
-                      <tr>
-                        <td colSpan="5" className="text-center py-3 text-muted">
-                          Select a main service first
-                        </td>
-                      </tr>
-                    ) : childrenList.length === 0 ? (
-                      <tr>
-                        <td colSpan="5" className="text-center py-3 text-muted">
-                          No child services available
-                        </td>
-                      </tr>
-                    ) : (
-                      childrenList.map((c) => (
-                        <tr key={c.id}>
-                          <td className="text-center">{c.id}</td>
-                          <td>{c.child_service_name}</td>
-                          <td>₹{c.price}</td>
-                          <td>{c.duration} min</td>
-
-                          <td className="text-end">
-                            <button
-                              className="btn btn-outline-primary btn-sm me-2"
-                              onClick={() => startEditChild(c)}
-                            >
-                              <Edit size={14} /> Edit
-                            </button>
-
-                            <button
-                              className="btn btn-outline-danger btn-sm"
-                              onClick={() => removeChild(c.id)}
-                            >
-                              <Trash2 size={14} /> Delete
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-            </div>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
-
       </div>
     </div>
+
+    {/* Child Services Card */}
+    <div className="col-lg-6">
+      <div className="card premium-card shadow">
+
+        <div className="card-header premium-header-secondary d-flex justify-content-between align-items-center">
+          <h5 className="mb-0 fw-bold">Child Services</h5>
+          <select
+            className="form-select form-select-sm w-auto"
+            value={selectedMainId}
+            onChange={(e) => setSelectedMainId(e.target.value)}
+          >
+            <option value="">Select Main</option>
+            {mainServices.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.main_services_name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="card-body">
+          {/* Child Form */}
+          <form onSubmit={submitChild} className="mb-3 p-3 rounded">
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Child Name</label>
+              <input
+                name="child_service_name"
+                className="form-control form-control-lg"
+                value={childForm.child_service_name}
+                onChange={onChildChange}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Description</label>
+              <textarea
+                name="child_service_description"
+                className="form-control"
+                rows={2}
+                value={childForm.child_service_description}
+                onChange={onChildChange}
+              />
+            </div>
+
+            <div className="row">
+              <div className="col-6">
+                <label className="form-label fw-semibold">Price</label>
+                <input
+                  name="price"
+                  type="number"
+                  className="form-control mb-3"
+                  value={childForm.price}
+                  onChange={onChildChange}
+                />
+              </div>
+              <div className="col-6">
+                <label className="form-label fw-semibold">Duration (min)</label>
+                <input
+                  name="duration"
+                  type="number"
+                  className="form-control mb-3"
+                  value={childForm.duration}
+                  onChange={onChildChange}
+                />
+              </div>
+            </div>
+
+            <label className="form-label fw-semibold">Main Service</label>
+            <select
+              name="main_services"
+              className="form-select mb-3"
+              value={childForm.main_services}
+              onChange={onChildChange}
+            >
+              <option value="">Choose</option>
+              {mainServices.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.main_services_name}
+                </option>
+              ))}
+            </select>
+
+            <button className="btn btn-info w-100 btn-lg shadow-sm">
+              {isEditingChild ? "Update Child Service" : "Add Child Service"}
+            </button>
+          </form>
+
+          {/* Child Table */}
+          <div className="table-responsive">
+            <table className="table table-premium table-hover align-middle">
+              <thead>
+                <tr className="text-center">
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Duration</th>
+                  <th className="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {!selectedMainId ? (
+                  <tr>
+                    <td colSpan="5" className="text-center py-3 text-muted">
+                      Select a main service first
+                    </td>
+                  </tr>
+                ) : childrenList.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="text-center py-3 text-muted">
+                      No child services available
+                    </td>
+                  </tr>
+                ) : (
+                  childrenList.map((c) => (
+                    <tr key={c.id}>
+                      <td className="text-center">{c.id}</td>
+                      <td>{c.child_service_name}</td>
+                      <td>₹{c.price}</td>
+                      <td>{c.duration} min</td>
+                      <td className="text-end">
+                        <button
+                          className="btn btn-outline-primary btn-sm me-2"
+                          onClick={() => startEditChild(c)}
+                        >
+                          <Edit size={14} /> Edit
+                        </button>
+                        <button
+                          className="btn btn-outline-danger btn-sm"
+                          onClick={() => removeChild(c.id)}
+                        >
+                          <Trash2 size={14} /> Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
   );
 }

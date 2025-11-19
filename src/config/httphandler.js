@@ -12,18 +12,19 @@ const api = axios.create({
   },
 });
 
-
-
+// --------------------------------------------------
+// 🔹 Auto-Attach Token (Except Public APIs)
+// --------------------------------------------------
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
 
+    // Define public routes
     const publicRoutes = [
       "/api/auth/login/",
       "/api/auth/admin/register/",
       "/api/services/user/genders/",
       "/api/services/user/main/",
-      "api/auth/admin/register/"
     ];
 
     const isPublic = publicRoutes.some((route) =>
@@ -39,9 +40,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-
-
-
 // --------------------------------------------------
 // 🔹 Global Error Handler
 // --------------------------------------------------
@@ -50,7 +48,6 @@ api.interceptors.response.use(
   (error) => {
     console.error("HTTP Error:", error?.response || error);
 
-    // Return structured error message
     return Promise.reject(error?.response?.data || { detail: "Network error" });
   }
 );
@@ -83,5 +80,4 @@ export const httpDelete = async (url) => {
   return res.data;
 };
 
-// --------------------------------------------------
 export default api;
