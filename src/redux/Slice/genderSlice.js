@@ -1,85 +1,119 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { httpGet, httpPost } from "../../config/httphandler";
+import api from "../../config/httphandler"; // your axios instance
 
-// ✅ Base endpoint
-const BASE_URL = "services/gender/";
-
-// ✅ GET all genders
-export const fetchGenders = createAsyncThunk(
-  "gender/fetchGenders",
+// =========================================================
+// 1️⃣ GET Gender List (Public API)
+// GET: /api/services/user/genders/
+// =========================================================
+export const getGenders = createAsyncThunk(
+  "gender/getGenders",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await httpGet(BASE_URL);
-      return response; // expected: array of genders
+      const res = await api.get("/api/services/user/genders/");
+      return res.data;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(error.response?.data || "Error fetching genders");
     }
   }
 );
 
-// ✅ POST new gender
-export const addGender = createAsyncThunk(
-  "gender/addGender",
-  async (genderData, { rejectWithValue }) => {
+// =========================================================
+// 2️⃣ CREATE Main Service Under a Gender (Admin API)
+// POST: /api/services/admin/gender/:genderId/main/
+// Body: { main_services_name, main_services_description }
+// =========================================================
+export const createMainService = createAsyncThunk(
+  "gender/createMainService",
+  async ({ genderId, data }, { rejectWithValue }) => {
     try {
-      const response = await httpPost(BASE_URL, genderData);
-      return response; // expected: newly created gender
+      const res = await api.post(
+        `/api/services/admin/gender/${genderId}/main/`,
+        data
+      );
+      return res.data;
     } catch (error) {
-      return rejectWithValue(error);
+      console.log("CREATE MAIN SERVICE ERROR:", error.response);
+return rejectWithValue(error);
     }
   }
 );
 
-// ✅ Slice
+// =========================================================
+// 3️⃣ GET Main Services Under Gender
+// GET: /api/services/user/main/?gender_id=2
+// =========================================================
+export const getMainServices = createAsyncThunk(
+  "gender/getMainServices",
+  async (genderId, { rejectWithValue }) => {
+    try {
+      const res = await api.get(
+        `/api/services/user/main/?gender_id=${genderId}`
+      );
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Error fetching main services"
+      );
+    }
+  }
+);
+
+// =========================================================
+// SLICE
+// =========================================================
 const genderSlice = createSlice({
   name: "gender",
   initialState: {
     genders: [],
+    mainServices: [],
     loading: false,
     error: null,
-    success: false,
+    successMessage: null,
   },
-  reducers: {
-    clearStatus: (state) => {
-      state.success = false;
-      state.error = null;
-    },
-  },
+
   extraReducers: (builder) => {
-    // 🔹 Fetch
+    // 📌 GET GENDERS
     builder
-      .addCase(fetchGenders.pending, (state) => {
+      .addCase(getGenders.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
-      .addCase(fetchGenders.fulfilled, (state, action) => {
+      .addCase(getGenders.fulfilled, (state, action) => {
         state.loading = false;
         state.genders = action.payload;
       })
-      .addCase(fetchGenders.rejected, (state, action) => {
+      .addCase(getGenders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
 
-    // 🔹 Add
+    // 📌 CREATE MAIN SERVICE
     builder
-      .addCase(addGender.pending, (state) => {
+      .addCase(createMainService.pending, (state) => {
         state.loading = true;
-        state.error = null;
-        state.success = false;
       })
-      .addCase(addGender.fulfilled, (state, action) => {
+      .addCase(createMainService.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = true;
-        state.genders.push(action.payload);
+        state.successMessage = action.payload.message;
       })
-      .addCase(addGender.rejected, (state, action) => {
+      .addCase(createMainService.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        state.success = false;
+      });
+
+    // 📌 GET MAIN SERVICES LIST
+    builder
+      .addCase(getMainServices.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getMainServices.fulfilled, (state, action) => {
+        state.loading = false;
+        state.mainServices = action.payload;
+      })
+      .addCase(getMainServices.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearStatus } = genderSlice.actions;
 export default genderSlice.reducer;

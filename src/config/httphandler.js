@@ -1,24 +1,34 @@
 import axios from "axios";
 import { axiosConfig } from "./config";
 
-// ✅ Create Axios instance with base config
+// --------------------------------------------------
+// 🔹 Create Axios instance
+// --------------------------------------------------
 const api = axios.create({
   ...axiosConfig,
-  withCredentials: true, // Needed if using cookies or JWT with CORS
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// ✅ Automatically attach token for protected routes only
+
+
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
 
-    // Skip adding Authorization for public routes
-    const isPublic =
-      config.url.includes("api/auth/admin/register") ||
-      config.url.includes("api/auth/login/");
+    const publicRoutes = [
+      "/api/auth/login/",
+      "/api/auth/admin/register/",
+      "/api/services/user/genders/",
+      "/api/services/user/main/",
+      "api/auth/admin/register/"
+    ];
+
+    const isPublic = publicRoutes.some((route) =>
+      config.url.startsWith(route)
+    );
 
     if (token && !isPublic) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -29,16 +39,25 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ Global error handler
+
+
+
+// --------------------------------------------------
+// 🔹 Global Error Handler
+// --------------------------------------------------
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error("HTTP Error:", error?.response || error);
-    return Promise.reject(error?.response?.data || error.message);
+
+    // Return structured error message
+    return Promise.reject(error?.response?.data || { detail: "Network error" });
   }
 );
 
-// ✅ CRUD helper functions
+// --------------------------------------------------
+// 🔹 CRUD Helper Functions
+// --------------------------------------------------
 export const httpGet = async (url, params = {}) => {
   const res = await api.get(url, { params });
   return res.data;
@@ -54,10 +73,15 @@ export const httpPut = async (url, data) => {
   return res.data;
 };
 
+export const httpPatch = async (url, data) => {
+  const res = await api.patch(url, data);
+  return res.data;
+};
+
 export const httpDelete = async (url) => {
   const res = await api.delete(url);
   return res.data;
 };
 
-// ✅ Export the Axios instance
+// --------------------------------------------------
 export default api;

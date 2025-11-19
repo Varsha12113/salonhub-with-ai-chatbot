@@ -36,6 +36,7 @@ import AdminCustomers from "./pages/admin/AdminCustomers.jsx";
 import AdminServices from "./pages/admin/AdminServices.jsx";
 import AdminAnalytics from "./pages/admin/AdminAnalytics.jsx";
 
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -43,6 +44,7 @@ export default function App() {
         {/* 🔓 Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Registration />} />
+        
 
         {/* Main layout routes */}
         <Route element={<MainLayout />}>

@@ -9,18 +9,33 @@ export default function Login() {
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
 
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [formData, setFormData] = useState({ email_or_username: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
+
+// const handleSubmit = async (e) => {
+//   e.preventDefault();
+//   const result = await dispatch(loginUser(formData));
+
+//   if (result.meta.requestStatus === "fulfilled") {
+//     const userRole = result.payload.role; // 'admin' or 'user'
+
+//     if (userRole === "admin") {
+//       navigate("/admin/dashboard");
+//     } else {
+//       navigate("/user/dashboard");
+//     }
+//   }
+// };
 
 const handleSubmit = async (e) => {
   e.preventDefault();
   const result = await dispatch(loginUser(formData));
 
   if (result.meta.requestStatus === "fulfilled") {
-    const userRole = result.payload.role; // 'admin' or 'user'
+    const userRole = result.payload.user.role; // ✔ CORRECT
 
     if (userRole === "admin") {
       navigate("/admin/dashboard");
@@ -29,7 +44,6 @@ const handleSubmit = async (e) => {
     }
   }
 };
-
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
@@ -74,9 +88,9 @@ const handleSubmit = async (e) => {
     </label>
     <input
   type="text"
-  name="username"
-  placeholder="Enter email or username"
-  value={formData.username || ""}
+  name="email_or_username"
+  placeholder="Enter email_or_username"
+  value={formData.email_or_username || ""}
   onChange={handleChange}
   className="w-full p-3 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent outline-none transition"
   required

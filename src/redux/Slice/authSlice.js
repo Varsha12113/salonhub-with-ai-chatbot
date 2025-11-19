@@ -10,7 +10,7 @@ export const registerAdmin = createAsyncThunk(
   "auth/registerAdmin",
   async (formData, { rejectWithValue }) => {
     try {
-      const data = await httpPost("api/auth/admin/register/", formData); // uses API_BASE internally
+      const data = await httpPost("api/auth/admin/register/", formData);
       console.log("Registration success:", data);
       return data;
     } catch (err) {
@@ -20,18 +20,18 @@ export const registerAdmin = createAsyncThunk(
   }
 );
 
-
-
-
-
 // ---------------------------------------------------------
 // 🔹 LOGIN USER
 // ---------------------------------------------------------
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async ({ username, password }, { rejectWithValue }) => {
+  async ({ email_or_username, password }, { rejectWithValue }) => {
     try {
-      const data = await httpPost("api/auth/login/", { username, password });
+      const data = await httpPost("api/auth/login/", {
+        email_or_username,
+        password,
+      });
+
       return data;
     } catch (err) {
       console.error("Login error:", err);
@@ -39,8 +39,9 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+
 // ---------------------------------------------------------
-// 🔹 INITIAL STATE (PERSISTED USER + TOKEN)
+// 🔹 INITIAL STATE
 // ---------------------------------------------------------
 
 const storedUser = getFromStorage("user");
@@ -57,9 +58,6 @@ const authSlice = createSlice({
     error: null,
   },
 
-  // -------------------------------------------------------
-  // 🔹 NORMAL REDUCERS
-  // -------------------------------------------------------
   reducers: {
     logout: (state) => {
       state.user = null;
@@ -68,31 +66,32 @@ const authSlice = createSlice({
       removeFromStorage("user");
       removeFromStorage("token");
       removeFromStorage("role");
+      removeFromStorage("refresh");
     },
   },
 
-  // -------------------------------------------------------
-  // 🔹 EXTRA REDUCERS (Async Thunks)
-  // -------------------------------------------------------
   extraReducers: (builder) => {
     // 🟡 LOGIN
     builder
-  .addCase(loginUser.pending, (state) => {
+      .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
 
-        // ✅ store data correctly
-        state.user = action.payload.user;
-        state.token = action.payload.tokens.access;
-        state.role = action.payload.role;
+        console.log("LOGIN PAYLOAD:", action.payload);
 
-        // ✅ persist in localStorage
+        // ✔ FIXED payload structure
+        state.user = action.payload.user;
+        state.token = action.payload.access;  // <== IMPORTANT
+        state.role = action.payload.user.role;
+
+        // ✔ Save to localStorage
         saveToStorage("user", action.payload.user);
-        saveToStorage("token", action.payload.tokens.access);
-        saveToStorage("role", action.payload.role);
+        saveToStorage("token", action.payload.access);
+        saveToStorage("refresh", action.payload.refresh);
+        saveToStorage("role", action.payload.user.role);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -107,8 +106,9 @@ const authSlice = createSlice({
       })
       .addCase(registerAdmin.fulfilled, (state, action) => {
         state.loading = false;
+        // Some APIs return user + token, some don’t — safe fallback:
         state.user = action.payload.user || null;
-        state.token = action.payload.token || null;
+        state.token = action.payload.access || null;
       })
       .addCase(registerAdmin.rejected, (state, action) => {
         state.loading = false;
@@ -117,8 +117,6 @@ const authSlice = createSlice({
   },
 });
 
-// ---------------------------------------------------------
-// 🔹 EXPORTS
 // ---------------------------------------------------------
 export const { logout } = authSlice.actions;
 export default authSlice.reducer;

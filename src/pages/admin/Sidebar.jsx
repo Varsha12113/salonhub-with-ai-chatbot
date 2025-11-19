@@ -12,6 +12,7 @@ export default function Sidebar() {
     { name: "Customers", icon: <Users size={20} />, path: "/admin/customers" },
     { name: "Services", icon: <MdOutlineSpa size={20} />, path: "/admin/services" },
     { name: "Analytics", icon: <BarChart size={20} />, path: "/admin/analytics" },
+    
   ];
 
   return (
