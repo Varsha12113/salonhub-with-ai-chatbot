@@ -43,6 +43,47 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !publicRoutes.some((route) =>
+        new URL(originalRequest.url, window.location.origin).pathname.startsWith(route)
+      )
+    ) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = localStorage.getItem("refreshToken");
+
+        if (!refreshToken) throw new Error("No refresh token found");
+
+        // Call refresh token endpoint
+        const response = await api.post("/api/auth/token/refresh/", { refresh: refreshToken });
+
+        const newToken = response.data.access;
+        localStorage.setItem("token", newToken);
+
+        // Update Authorization header and retry original request
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        console.error("Refresh token failed:", refreshError);
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error?.response?.data || { detail: "Network error" });
+  }
+);
 // --------------------------------------------------
 // 🔹 Global Error Handler
 // --------------------------------------------------
