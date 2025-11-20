@@ -1,65 +1,79 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./components/MainLayout.jsx";
 import ProtectedRoute from "./routes/PrivateRoute.js";
 
+// Pages & Components
+import Login from "./pages/Login";
+import Registration from "./pages/Registration";
+import LandingPage from "./pages/LandingPage";
+import AboutPage from "./pages/AboutPage.jsx";
+import Contact from "./pages/Contact.jsx";
+import Services from "./pages/Services.jsx";
+import Booking from "./pages/Booking/Booking.jsx";
+import Cart from "./pages/Cart";
+import Payment from "./pages/Payment.jsx";
 import Dashboard from "./pages/Dashboard";
 import CalendarView from "./pages/CalendarView";
+
+// Female Services
+import Hair from "./components/services/femaleservices/Hair.jsx";
+import Makeup from "./components/services/femaleservices/Makeup.jsx";
+import Waxing from "./components/services/femaleservices/Waxing.jsx";
+import Bridal from "./components/services/femaleservices/Bridal.jsx";
+import FemalePedicureManicure from "./components/services/femaleservices/Pedicuremanicure.jsx";
+
+// Male Services
+import HairMale from "./components/services/maleservices/HairMale.jsx";
+import Facial from "./components/services/maleservices/Facial.jsx";
+import Beardtrim from "./components/services/maleservices/Beardtrim.jsx";
+import MaleBridal from "./components/services/maleservices/Bridal.jsx";
+import MalePedicuremanicure from "./components/services/maleservices/Pedicuremanicure.jsx";
+
+// Admin Pages
 import AdminPanel from "./pages/admin/AdminPanel";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Appointments from "./pages/admin/Appointments";
 import AddProvider from "./pages/admin/AddProvider";
 import ProviderList from "./pages/admin/ProviderList";
-import Login from "./pages/Login";
-import Registration from "./pages/Registration";
-import LandingPage from "./pages/LandingPage";
-import AboutPage from "./pages/AboutPage.jsx";
-import Hair from "./components/services/femaleservices/Hair.jsx";
-import Payment from "./pages/Payment.jsx";
-import Makeup from "./components/services/femaleservices/Makeup.jsx";
-import Waxing from "./components/services/femaleservices/Waxing.jsx";
-import Bridal from "./components/services/femaleservices/Bridal.jsx";
-import Beardtrim from "./components/services/maleservices/Beardtrim.jsx";
-import MaleBridal from "./components/services/maleservices/Bridal.jsx";
-import Facial from "./components/services/maleservices/Facial.jsx";
-import MalePedicuremanicure from "./components/services/maleservices/Pedicuremanicure.jsx";
-import FemalePedicureManicure from "./components/services/femaleservices/Pedicuremanicure.jsx";
-import Cart from "./pages/Cart";
-import Contact from "./pages/Contact.jsx";
-import Booking from "./pages/Booking/Booking.jsx";
-import Services from "./pages/Services.jsx";
-import HairMale from "./components/services/maleservices/HairMale.jsx";
-import UserPanel from "./pages/User/UserPanel.jsx";
-import UserDashboard from "./pages/User/UserDashboard.jsx";
 import AdminOrders from "./pages/admin/AdminOrders.jsx";
 import AdminCustomers from "./pages/admin/AdminCustomers.jsx";
 import AdminServices from "./pages/admin/AdminServices.jsx";
 import AdminAnalytics from "./pages/admin/AdminAnalytics.jsx";
+import Scheduler from "./pages/admin/scheduler.jsx";
 
+// User Pages
+import UserPanel from "./pages/User/UserPanel.jsx";
+import UserDashboard from "./pages/User/UserDashboard.jsx";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* 🔓 Public routes */}
+        {/* =============================
+            🔓 Public routes
+        ============================= */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Registration />} />
-        
 
-        {/* Main layout routes */}
+        {/* =============================
+            Main layout wrapper
+        ============================= */}
         <Route element={<MainLayout />}>
+          {/* Public Pages */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/booking" element={<Booking />} />
 
-          {/* 🔹 Female Services */}
+          {/* Female Services */}
           <Route path="/services/female/hair" element={<Hair />} />
           <Route path="/services/female/makeup" element={<Makeup />} />
           <Route path="/services/female/waxing" element={<Waxing />} />
           <Route path="/services/female/manicure-pedicure" element={<FemalePedicureManicure />} />
           <Route path="/services/female/bridal" element={<Bridal />} />
 
-          {/* 🔹 Male Services */}
+          {/* Male Services */}
           <Route path="/services/male/hair" element={<HairMale />} />
           <Route path="/services/male/facial" element={<Facial />} />
           <Route path="/services/male/beard-trim" element={<Beardtrim />} />
@@ -69,10 +83,10 @@ export default function App() {
           <Route path="/services" element={<Services />} />
 
           {/* =============================
-              ✅ Protected User Routes
+              ✅ Protected Routes (User + Admin)
           ============================= */}
           <Route element={<ProtectedRoute allowedRoles={["user", "admin"]} />}>
-            <Route path="/booking" element={<Booking />} />
+            
             <Route path="/cart" element={<Cart />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/dashboard" element={<Dashboard />} />
@@ -93,10 +107,12 @@ export default function App() {
               <Route path="customers" element={<AdminCustomers />} />
               <Route path="services" element={<AdminServices />} />
               <Route path="analytics" element={<AdminAnalytics />} />
+              <Route path="calendar" element={<Scheduler />} />
             </Route>
           </Route>
-                    {/* =============================
-              ✅ Protected user Routes
+
+          {/* =============================
+              ✅ Protected User Panel Routes
           ============================= */}
           <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
             <Route path="/user" element={<UserPanel />}>
@@ -104,12 +120,16 @@ export default function App() {
               <Route path="dashboard" element={<UserDashboard />} />
             </Route>
           </Route>
+
+          {/* =============================
+              Fallback route
+          ============================= */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>
   );
 }
-
 
 
 

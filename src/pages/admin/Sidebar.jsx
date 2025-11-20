@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, ShoppingBag, Users, BarChart, Menu, X } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Users, BarChart, Menu, X,Calendar } from "lucide-react";
 import { MdOutlineSpa } from "react-icons/md";
 
 export default function Sidebar() {
@@ -12,6 +12,7 @@ export default function Sidebar() {
     { name: "Customers", icon: <Users size={20} />, path: "/admin/customers" },
     { name: "Services", icon: <MdOutlineSpa size={20} />, path: "/admin/services" },
     { name: "Analytics", icon: <BarChart size={20} />, path: "/admin/analytics" },
+    { name: "Scheduler", icon: <Calendar size={20} />, path: "/admin/calendar" },
     
   ];
 

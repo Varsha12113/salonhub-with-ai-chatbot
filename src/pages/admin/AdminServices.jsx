@@ -211,66 +211,111 @@ export default function AdminServices() {
   </h2>
 
  <style>{`
-  /* ----------------- Buttons ----------------- */
-  .btn-purple {
-    background-color: #8b2cff;
-    border: 1px solid #6e1fcc;
-    color: white;
-    border-radius: 6px;
-    padding: 0.75rem; /* same size for all buttons */
-    font-size: 1rem;
-    width: 100%; /* full width */
-  }
-  .btn-purple:hover {
-    background-color: #a34dff;
-    border-color: #8b2cff;
-    color: white;
-  }
+/* ----------------- Buttons ----------------- */
+.btn-purple {
+  background-color: #8b2cff;
+  border: 1px solid #6e1fcc;
+  color: white;
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  width: 100%;
+}
+.btn-purple:hover {
+  background-color: #a34dff;
+  border-color: #8b2cff;
+  color: white;
+}
 
-  .btn-info-purple {
-    background-color: #5b2cff;
-    border: 1px solid #4a1fcc;
-    color: white;
-    border-radius: 6px;
-    padding: 0.75rem;
-    font-size: 1rem;
-    width: 100%;
-  }
-  .btn-info-purple:hover {
-    background-color: #7d4dff;
-    border-color: #5b2cff;
-  }
+.btn-info-purple {
+  background-color: #5b2cff;
+  border: 1px solid #4a1fcc;
+  color: white;
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  width: 100%;
+}
+.btn-info-purple:hover {
+  background-color: #7d4dff;
+  border-color: #5b2cff;
+}
 
-  .btn-outline-purple {
-    color: #8b2cff;
-    border: 1px solid #8b2cff;
-    border-radius: 6px;
-    width: 100%;
-  }
-  .btn-outline-purple:hover {
-    background-color: #f0e0ff;
-    color: #8b2cff;
-  }
+.btn-outline-purple {
+  color: #8b2cff;
+  border: 1px solid #8b2cff;
+  border-radius: 6px;
+  width: 100%;
+}
+.btn-outline-purple:hover {
+  background-color: #f0e0ff;
+  color: #8b2cff;
+}
 
-  /* ----------------- Form Fields ----------------- */
-  .premium-card .form-control,
-  .premium-card .form-select,
-  .premium-card textarea {
-    border: 1px solid #8b2cff;
-    border-radius: 6px;
-    margin-bottom: 1rem; /* spacing between fields */
+/* ----------------- Form Fields ----------------- */
+.premium-card .form-control,
+.premium-card .form-select,
+.premium-card textarea {
+  border: 1px solid #8b2cff;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  width: 100%;
+}
+
+.premium-card .form-control:focus,
+.premium-card .form-select:focus,
+.premium-card textarea:focus {
+  border-color: #6e1fcc;
+  box-shadow: 0 0 0 0.2rem rgba(139,44,255,0.25);
+  outline: none;
+}
+
+/* ----------------- Tables ----------------- */
+.table-premium {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.table-premium th,
+.table-premium td {
+  border-bottom: 1px solid rgba(139, 44, 255, 0.3);
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+}
+
+.table-premium th {
+  background-color: rgba(139, 44, 255, 0.15);
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+}
+
+.table-premium td {
+  color: #000000;
+}
+
+.table-premium tbody tr:hover {
+  background-color: rgba(139, 44, 255, 0.1);
+}
+
+.table-premium .text-end {
+  text-align: right;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .table-premium th, .table-premium td {
     padding: 0.5rem;
-    width: 100%;
   }
-
-  .premium-card .form-control:focus,
-  .premium-card .form-select:focus,
-  .premium-card textarea:focus {
-    border-color: #6e1fcc;
-    box-shadow: 0 0 0 0.2rem rgba(139,44,255,0.25);
-    outline: none;
-  }
+}
 `}</style>
+
 
 
   <div className="row g-4">
