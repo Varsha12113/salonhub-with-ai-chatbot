@@ -13,23 +13,26 @@ const api = axios.create({
 });
 
 // --------------------------------------------------
+// 🔹 Define Public Routes
+// --------------------------------------------------
+const publicRoutes = [
+  "/api/auth/login/",
+  "/api/auth/admin/register/",
+  "/api/services/user/genders/",
+  "/api/services/user/main/",
+];
+
+// --------------------------------------------------
 // 🔹 Auto-Attach Token (Except Public APIs)
 // --------------------------------------------------
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
 
-    // Define public routes
-    const publicRoutes = [
-      "/api/auth/login/",
-      "/api/auth/admin/register/",
-      "/api/services/user/genders/",
-      "/api/services/user/main/",
-    ];
+    // Ensure we get only the path for comparison
+    const urlPath = new URL(config.url, window.location.origin).pathname;
 
-    const isPublic = publicRoutes.some((route) =>
-      config.url.startsWith(route)
-    );
+    const isPublic = publicRoutes.some((route) => urlPath.startsWith(route));
 
     if (token && !isPublic) {
       config.headers.Authorization = `Bearer ${token}`;
