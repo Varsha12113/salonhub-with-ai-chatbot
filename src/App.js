@@ -15,6 +15,8 @@ import Cart from "./pages/Cart";
 import Payment from "./pages/Payment.jsx";
 import Dashboard from "./pages/Dashboard";
 import CalendarView from "./pages/CalendarView";
+import UserRegister from "./pages/Registration";
+import Register from "./pages/admin/AdminRegister.jsx";
 
 // Female Services
 import Hair from "./components/services/femaleservices/Hair.jsx";
@@ -55,6 +57,8 @@ export default function App() {
         ============================= */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Registration />} />
+        {/* Admin Registration */}
+        <Route path="admin/register" element={<Register />} />
 
         {/* =============================
             Main layout wrapper
@@ -96,7 +100,7 @@ export default function App() {
           {/* =============================
               ✅ Protected Admin Routes
           ============================= */}
-          <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          {/* <Route element={<ProtectedRoute allowedRoles={["admin"]} />}> */}
             <Route path="/admin" element={<AdminPanel />}>
               <Route index element={<AdminDashboard />} />
               <Route path="dashboard" element={<AdminDashboard />} />
@@ -109,17 +113,18 @@ export default function App() {
               <Route path="analytics" element={<AdminAnalytics />} />
               <Route path="calendar" element={<Scheduler />} />
             </Route>
-          </Route>
+          {/* </Route> */}
 
           {/* =============================
               ✅ Protected User Panel Routes
           ============================= */}
-          <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
+          {/* <Route element={<ProtectedRoute allowedRoles={["user"]} />}> */}
             <Route path="/user" element={<UserPanel />}>
               <Route index element={<UserDashboard />} />
               <Route path="dashboard" element={<UserDashboard />} />
+              {/* <Route path="userregister" element={<Registration />} /> */}
             </Route>
-          </Route>
+          {/* </Route> */}
 
           {/* =============================
               Fallback route

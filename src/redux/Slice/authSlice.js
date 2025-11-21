@@ -104,7 +104,10 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.access;
-        state.role = action.payload.user.role;
+        const roleId = action.payload.user.role;
+const roleMap = { 1: "admin", 2: "user" };
+
+state.role = roleMap[roleId];
 
         saveToStorage("user", action.payload.user);
         saveToStorage("token", action.payload.access);

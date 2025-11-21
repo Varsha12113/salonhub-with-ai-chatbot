@@ -165,45 +165,13 @@ const Navbar = () => {
               </span>
             </button>
 
-            {user ? (
-              <div className="relative">
-                <button
-                  onClick={() => setAvatarDropdownOpen(!avatarDropdownOpen)}
-                  className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-purple-500 hover:scale-105 transition-transform duration-200"
-                >
-                  {user.avatar ? (
-                    <img
-                      src={user.avatar}
-                      alt="avatar"
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  ) : (
-                    <User className="w-6 h-6 text-purple-500" />
-                  )}
-                </button>
-
-                {avatarDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg py-2 flex flex-col">
-                    <span className="px-4 py-2 text-gray-700 font-medium">
-                      {user.name || user.username}
-                    </span>
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 transition rounded-md font-semibold"
-                    >
-                      <LogOut size={18} /> Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <button
-                onClick={() => navigate("/login")}
-                className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:scale-105 transition-all duration-300"
-              >
-                Login
-              </button>
-            )}
+      {/* Login Button */}
+    <button
+      onClick={() => {navigate('/login'); }}
+      className="px-3 py-2 bg-purple-600 text-white rounded-md"
+    >
+      Login
+    </button>
           </div>
 
           {/* ---------- Mobile Menu Toggle ---------- */}

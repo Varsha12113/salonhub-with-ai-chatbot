@@ -21,20 +21,23 @@ export default function Login() {
 
 const handleSubmit = async (e) => {
   e.preventDefault();
+
   const result = await dispatch(loginUser(formData));
+  console.log("LOGIN PAYLOAD:", result.payload);
 
   if (result.meta.requestStatus === "fulfilled") {
-    const role = result.payload.user.role; // This is a string: "admin" or "user"
+    const role = result.payload.user.role;
 
     if (role === "admin") {
-      navigate("/admin/dashboard"); // Admin dashboard
+      navigate("/admin/dashboard");
     } else if (role === "user") {
-      navigate("/user/dashboard"); // User dashboard
+      navigate("/user/dashboard");
     } else {
-      navigate("/"); // Fallback
+      navigate("/");
     }
   }
 };
+
 
 
   return (

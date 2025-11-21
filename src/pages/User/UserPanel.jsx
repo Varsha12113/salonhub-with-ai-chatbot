@@ -1,9 +1,15 @@
-import React from 'react'
+import React from "react";
+import { Outlet } from "react-router-dom";
 
 const UserPanel = () => {
   return (
-    <div>UserPanel</div>
-  )
-}
+    <div className="p-4">
+      
 
-export default UserPanel
+      {/* This is where child routes will render */}
+      <Outlet />
+    </div>
+  );
+};
+
+export default UserPanel;

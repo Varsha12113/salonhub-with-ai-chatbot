@@ -10,17 +10,17 @@ import { Navigate, Outlet } from "react-router-dom";
 export default function ProtectedRoute({ children, allowedRoles }) {
   const { user } = useSelector((state) => state.auth);
 
-  // Not logged in → redirect to login page
   if (!user) return <Navigate to="/login" replace />;
 
-  // Get role from user object
   const userRole = user.role;
 
-  // Role not allowed → redirect to unauthorized page
   if (allowedRoles && !allowedRoles.includes(userRole)) {
     return <Navigate to="/unauthorized" replace />;
   }
 
-  // Render children if provided, otherwise render nested routes using Outlet
-  return children ? children : <Outlet />;
+  // If children exist, render them
+  if (children) return children;
+
+  // else render nested routes
+  return <Outlet />;
 }

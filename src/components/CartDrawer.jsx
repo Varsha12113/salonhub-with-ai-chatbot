@@ -71,21 +71,26 @@ export default function CartDrawer({ isOpen, onClose }) {
         </div>
 
         <div className="p-4 border-t">
-          <div className="flex items-center justify-between mb-3">
-            <div className="text-sm text-gray-600">Total</div>
-            <div className="text-lg font-bold">₹{total}</div>
-          </div>
-          <div className="flex gap-2">
-            <Link to="/cart" onClick={onClose} className="px-3 py-2 bg-white text-purple-700 rounded-md border border-purple-200 text-center"> Proceed to Booking</Link>
-            {/* <button
-              onClick={() => { onClose(); navigate('/booking'); }}
-              className="flex-1 text-center px-4 py-2 bg-purple-500 text-white rounded-md"
-            >
-              Proceed to Booking
-            </button> */}
-            
-          </div>
-        </div>
+  <div className="flex items-center justify-between mb-3">
+    <div className="text-sm text-gray-600">Total</div>
+    <div className="text-lg font-bold">₹{total}</div>
+  </div>
+
+  <div className="flex gap-2">
+    {/* Proceed to Booking Button */}
+    <button
+      onClick={() => {
+        onClose();
+        navigate('/booking?modal=true');
+      }}
+      className="flex-1 px-3 py-2 bg-white text-purple-700 rounded-md border border-purple-200 text-center"
+    >
+      Proceed to Booking
+    </button>
+    
+  </div>
+</div>
+
       </aside>
     </div>
   );
