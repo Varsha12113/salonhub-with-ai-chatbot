@@ -62,10 +62,19 @@ api.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem("refreshToken");
 
-        if (!refreshToken) throw new Error("No refresh token found");
+        if (!refreshToken) {
+          console.warn("No refresh token found - clearing auth and redirecting to login");
+          localStorage.removeItem("token");
+          localStorage.removeItem("refreshToken");
+          // Redirect to login page to re-authenticate
+          if (typeof window !== "undefined") {
+            window.location.href = "/login";
+          }
+          return Promise.reject({ detail: "No refresh token found" });
+        }
 
         // Call refresh token endpoint
-        const response = await api.post("/api/auth/token/refresh/", { refresh: refreshToken });
+        const response = await api.post("api/auth/refresh/", { refresh: refreshToken });
 
         const newToken = response.data.access;
         localStorage.setItem("token", newToken);
@@ -77,6 +86,9 @@ api.interceptors.response.use(
         console.error("Refresh token failed:", refreshError);
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
+        if (typeof window !== "undefined") {
+          window.location.href = "/login";
+        }
         return Promise.reject(refreshError);
       }
     }
@@ -84,17 +96,7 @@ api.interceptors.response.use(
     return Promise.reject(error?.response?.data || { detail: "Network error" });
   }
 );
-// --------------------------------------------------
-// 🔹 Global Error Handler
-// --------------------------------------------------
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error("HTTP Error:", error?.response || error);
-
-    return Promise.reject(error?.response?.data || { detail: "Network error" });
-  }
-);
+// End of response interceptor
 
 // --------------------------------------------------
 // 🔹 CRUD Helper Functions

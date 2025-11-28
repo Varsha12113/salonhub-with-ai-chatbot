@@ -1,23 +1,20 @@
-// src/redux/Slice/schedulerSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { httpGet, httpPost } from "../../config/httphandler";
 
-// ------------------- ASYNC THUNKS -------------------
-
-// GET all SlotMasters
-export const fetchSlotMasters = createAsyncThunk(
-  "scheduler/fetchSlotMasters",
+// Fetch slot masters
+export const getSlotMasters = createAsyncThunk(
+  "scheduler/getSlotMasters",
   async (_, { rejectWithValue }) => {
     try {
       const data = await httpGet("/api/scheduler/slotmasters/");
       return data;
     } catch (err) {
-      return rejectWithValue(err.detail || err);
+      return rejectWithValue(err?.detail || err?.message || "Failed to fetch slot masters");
     }
   }
 );
 
-// POST a new SlotMaster
+// Create a slot master
 export const createSlotMaster = createAsyncThunk(
   "scheduler/createSlotMaster",
   async (payload, { rejectWithValue }) => {
@@ -25,12 +22,11 @@ export const createSlotMaster = createAsyncThunk(
       const data = await httpPost("/api/scheduler/slotmasters/", payload);
       return data;
     } catch (err) {
-      return rejectWithValue(err.detail || err);
+      return rejectWithValue(err?.detail || err?.message || "Failed to create slot master");
     }
   }
 );
 
-// ------------------- SLICE -------------------
 const schedulerSlice = createSlice({
   name: "scheduler",
   initialState: {
@@ -39,38 +35,38 @@ const schedulerSlice = createSlice({
     error: null,
   },
   reducers: {
-    clearSchedulerError: (state) => {
+    clearSchedulerError(state) {
       state.error = null;
     },
   },
   extraReducers: (builder) => {
-    // Fetch SlotMasters
-    builder.addCase(fetchSlotMasters.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
-    builder.addCase(fetchSlotMasters.fulfilled, (state, action) => {
-      state.loading = false;
-      state.slotMasters = action.payload;
-    });
-    builder.addCase(fetchSlotMasters.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    });
+    builder
+      .addCase(getSlotMasters.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getSlotMasters.fulfilled, (state, action) => {
+        state.loading = false;
+        state.slotMasters = action.payload || [];
+      })
+      .addCase(getSlotMasters.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error?.message;
+      })
 
-    // Create SlotMaster
-    builder.addCase(createSlotMaster.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
-    builder.addCase(createSlotMaster.fulfilled, (state, action) => {
-      state.loading = false;
-      state.slotMasters.push(action.payload);
-    });
-    builder.addCase(createSlotMaster.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    });
+      .addCase(createSlotMaster.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createSlotMaster.fulfilled, (state, action) => {
+        state.loading = false;
+        // append created slot master
+        if (action.payload) state.slotMasters.push(action.payload);
+      })
+      .addCase(createSlotMaster.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error?.message;
+      });
   },
 });
 

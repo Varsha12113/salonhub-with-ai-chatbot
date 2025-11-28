@@ -49,7 +49,7 @@ export const getMainServices = createAsyncThunk(
       const res = await api.get(
         `/api/services/user/main/?gender_id=${genderId}`
       );
-      return res.data;
+      return { genderId, data: res.data };
     } catch (error) {
       return rejectWithValue(
         error.response?.data || "Error fetching main services"
@@ -65,7 +65,7 @@ const genderSlice = createSlice({
   name: "gender",
   initialState: {
     genders: [],
-    mainServices: [],
+    mainServices: {},
     loading: false,
     error: null,
     successMessage: null,
@@ -106,8 +106,11 @@ const genderSlice = createSlice({
         state.loading = true;
       })
       .addCase(getMainServices.fulfilled, (state, action) => {
-        state.loading = false;
-        state.mainServices = action.payload;
+  state.loading = false;
+
+  const { genderId, data } = action.payload;
+
+  state.mainServices[genderId] = data; 
       })
       .addCase(getMainServices.rejected, (state, action) => {
         state.loading = false;

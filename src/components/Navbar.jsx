@@ -66,80 +66,11 @@ const Navbar = () => {
                 Home
               </Link>
             </li>
-            <li className="relative group">
-              <div
-                onClick={() => toggleDropdown("services")}
-                className="flex items-center gap-1 cursor-pointer hover:text-purple-500 relative"
-              >
-                Services <ChevronDown size={16} />
-              </div>
-
-              {dropdownOpen === "services" && (
-                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[90vw] max-w-[500px] bg-white shadow-lg rounded-2xl border-[0.5px] border-gray-200 p-3 z-50">
-                  {!subDropdownOpen && (
-                    <div className="grid grid-cols-2 gap-2 text-center">
-                      {genders?.map((g) => (
-                        <div
-                          key={g.id}
-                          onClick={() => {
-                            setSubDropdownOpen(g.name);
-                            setSelectedGenderId(g.id);
-                          }}
-                          className={`cursor-pointer transition p-1.5 rounded-md flex flex-col items-center
-                          ${g.name === "female" ? "bg-purple-50 hover:bg-purple-100" : ""}
-                          ${g.name === "male" ? "bg-blue-50 hover:bg-blue-100" : ""}`}
-                        >
-                          {g.name === "female" && (
-                            <FaFemale className="text-lg text-purple-500 mb-1" />
-                          )}
-                          {g.name === "male" && (
-                            <FaMale className="text-lg text-blue-500 mb-1" />
-                          )}
-                          <span className="text-xs font-medium text-gray-700 capitalize">
-                            {g.name}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {subDropdownOpen && mainServices?.length > 0 && (
-                    <div className="flex flex-col gap-1.5">
-                      <div className="flex justify-between items-center mb-2">
-                        <h4 className="text-xs font-semibold text-gray-600 flex items-center gap-2 capitalize">
-                          {subDropdownOpen === "female" ? (
-                            <FaFemale className="text-purple-500" />
-                          ) : (
-                            <FaMale className="text-blue-500" />
-                          )}{" "}
-                          {subDropdownOpen} Services
-                        </h4>
-                        <button
-                          className="text-xs text-gray-500 hover:text-purple-600"
-                          onClick={() => setSubDropdownOpen(null)}
-                        >
-                          ← Back
-                        </button>
-                      </div>
-
-                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {mainServices.map((service) => (
-                          <li key={service.id}>
-                            <Link
-                              to={`/services/${service.gender}/${service.main_services_name}`}
-                              onClick={() => setDropdownOpen(null)}
-                              className="flex items-center gap-3 p-2 rounded hover:bg-purple-50 transition capitalize"
-                            >
-                              <FaCut className="text-purple-500" />
-                              {service.main_services_name}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              )}
-            </li>
+           <li>
+  <Link to="/services" className="hover:text-purple-500 transition">
+    Services
+  </Link>
+</li>
             <li>
               <Link to="/about" className="hover:text-purple-500 transition">
                 About
