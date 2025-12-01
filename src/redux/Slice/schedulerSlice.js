@@ -81,6 +81,57 @@ export const createWorkingDay = createAsyncThunk(
 );
 
 
+// =====================================================
+//1️⃣ GET Holidays
+// =====================================================
+export const getHolidays = createAsyncThunk(
+  "holidays/getHolidays",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await api.get("/api/scheduler/holidays/");
+      return res.data.results || res.data;  // <-- Always return array
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to load holidays");
+    }
+  }
+);
+
+// =====================================================
+// 2️⃣ ADD Holiday (date → holiday_date, description → reason)
+// =====================================================
+export const addHoliday = createAsyncThunk(
+  "holidays/addHoliday",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const newPayload = {
+        holiday_date: payload.date,      // MAPPING
+        reason: payload.description,     // MAPPING
+      };
+
+      const res = await api.post("/api/scheduler/holidays/", newPayload);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to create holiday");
+    }
+  }
+);
+
+
+// =====================================================
+// 3️⃣ DELETE Holiday
+// =====================================================
+export const deleteHoliday = createAsyncThunk(
+  "holidays/deleteHoliday",
+  async (id, { rejectWithValue }) => {
+    try {
+      await api.delete(`/api/scheduler/holidays/${id}/`);
+      return id;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to delete holiday");
+    }
+  }
+);
+
 
 // ======================================================================
 // 📌 MAIN SLICE (ALL in ONE FILE)
@@ -90,6 +141,7 @@ const schedulerSlice = createSlice({
   initialState: {
     slotMasters: [],
     workingDays: [],
+    holidays: [],
     loading: false,
     error: null,
   },
@@ -138,14 +190,14 @@ const schedulerSlice = createSlice({
         state.loading = true;
       })
       .addCase(getWorkingDays.fulfilled, (state, action) => {
-  state.loading = false;
-     const data = action.payload;
-  state.workingDays = Array.isArray(data)
-    ? data
-    : Array.isArray(data.results)
-    ? data.results
-    : [];
-})
+                state.loading = false;
+                  const data = action.payload;
+                state.workingDays = Array.isArray(data)
+                  ? data
+                  : Array.isArray(data.results)
+                  ? data.results
+                  : [];
+              })
       .addCase(getWorkingDays.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
@@ -162,20 +214,57 @@ const schedulerSlice = createSlice({
 
       .addCase(updateWorkingDay.rejected, (state, action) => {
         state.error = action.payload;
-      });
+      })
 
       // CREATE Working Day
-  builder.addCase(createWorkingDay.pending, (state) => {
-    state.loading = true;
-  });
-  builder.addCase(createWorkingDay.fulfilled, (state, action) => {
-    state.loading = false;
-    state.workingDays.push(action.payload); // add the new day to the state
-  });
-  builder.addCase(createWorkingDay.rejected, (state, action) => {
-    state.loading = false;
-    state.error = action.payload;
-  });
+      builder.addCase(createWorkingDay.pending, (state) => {
+        state.loading = true;
+      })
+      builder.addCase(createWorkingDay.fulfilled, (state, action) => {
+        state.loading = false;
+        state.workingDays.push(action.payload); // add the new day to the state
+      })
+      builder.addCase(createWorkingDay.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+  })
+
+// GET ------------------------------------
+      .addCase(getHolidays.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getHolidays.fulfilled, (state, action) => {
+  state.loading = false;
+  state.holidays = action.payload.results || action.payload || [];// Accept both paginated & non-paginated
+})
+      .addCase(getHolidays.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // ADD ------------------------------------
+      .addCase(addHoliday.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(addHoliday.fulfilled, (state, action) => {
+        state.loading = false;
+        state.holidays.push(action.payload);
+      })
+      .addCase(addHoliday.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // DELETE ------------------------------------
+      .addCase(deleteHoliday.fulfilled, (state, action) => {
+        state.holidays = state.holidays.filter(
+          (h) => h.id !== action.payload
+        );
+      });
+
+
+
   },
 });
 

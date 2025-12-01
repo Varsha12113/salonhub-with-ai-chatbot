@@ -3,6 +3,13 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { getSlotMasters, createSlotMaster } from "../../redux/Slice/schedulerSlice";
 import {getWorkingDays,updateWorkingDay,createWorkingDay} from "../../redux/Slice/schedulerSlice";
+import {
+  getHolidays,
+  addHoliday,
+  deleteHoliday,
+} from "../../redux/Slice/schedulerSlice";
+import { Trash2, Plus } from "lucide-react";
+
 
 export default function Scheduler() {
   return (
@@ -206,97 +213,6 @@ export default function Scheduler() {
 
  
 
-// function WorkingDaysSection() { 
-
-//  const dispatch = useDispatch();
-//   const { workingDays, loading } = useSelector((state) => state.scheduler);
-
-//   useEffect(() => {
-//     if (typeof getWorkingDays === "function") {
-//       dispatch(getWorkingDays());
-//     } else {
-//       console.warn("getWorkingDays thunk is not available from schedulerSlice");
-//     }
-//   }, [dispatch]);
-
-  
-//    const toggleDay = (day) => {
-//   dispatch(
-//     updateWorkingDay({
-//       id: day.id,
-//       weekday: day.weekday,
-//       is_working: !day.is_working,
-//     })
-//   );
-
-//      if (typeof updateWorkingDay === "function") {
-//       dispatch(
-//         updateWorkingDay({
-//           id: day.id,
-//           data: { is_working: !day.is_working },
-//         })
-//       );
-//     } else {
-//       console.warn("updateWorkingDay thunk is not available from schedulerSlice");
-//     }
-//   };
-
-
-//   const daysName = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-//    const list =
-//     Array.isArray(workingDays) ? workingDays :
-//     workingDays && Array.isArray(workingDays.results) ? workingDays.results :
-//     workingDays ? Object.values(workingDays).filter(Boolean) :
-//     [];
-
-
-//  return (
-//     <div className="p-5 bg-white rounded-lg shadow-md w-full max-w-3xl mx-auto">
-//       <h2 className="text-2xl font-semibold mb-4">Working Days</h2>
-
-//       {loading && <p className="text-blue-600">Loading...</p>}
-
-//       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-//         {list.length === 0 && !loading && (
-//           <p className="col-span-full text-gray-600">No working days available.</p>
-//         )}
-
-//         {list.map((day, index) => {
-//           // Skip entries that are falsy or missing weekday/is_working
-//           if (!day || typeof day.weekday !== "number" || typeof day.is_working !== "boolean") {
-//             // optional: you could show a placeholder, but avoid creating objects without id
-//             return null;
-//           }
-
-//           const weekdayLabel = daysName[day.weekday] ?? `Day ${index + 1}`;
-//           const key = day.id ?? `weekday-${day.weekday}-${index}`;
-
-//           return (
-//             <div
-//               key={key}
-//               className={`flex items-center justify-between p-4 rounded-lg border ${
-//                 day.is_working ? "bg-green-100 border-green-400" : "bg-red-100 border-red-400"
-//               }`}
-//             >
-//               <span className="font-medium">{weekdayLabel}</span>
-
-//               <button
-//                 onClick={() => toggleDay(day)}
-//                 className={`px-4 py-1 rounded-full text-white text-sm font-medium ${
-//                   day.is_working ? "bg-green-500" : "bg-red-500"
-//                 }`}
-//               >
-//                 {day.is_working ? "ON" : "OFF"}
-//               </button>
-//             </div>
-//           );
-//         })}
-//       </div>
-//     </div>
-//   );
-
-//  }
 
 function WorkingDaysSection() {
   const dispatch = useDispatch();
@@ -415,5 +331,149 @@ function WorkingDaysSection() {
 }
 
 
-function HolidaysSection() {  }
+function HolidaysSection() {
+  const dispatch = useDispatch();
+  const { holidays, loading } = useSelector((state) => state.scheduler);
+
+  const [showModal, setShowModal] = useState(false);
+
+  const [form, setForm] = useState({
+    date: "",
+    description: "",
+  });
+
+  useEffect(() => {
+    dispatch(getHolidays());
+  }, [dispatch]);
+
+  const handleAddHoliday = () => {
+    if (!form.date || !form.description) return alert("All fields required");
+
+    dispatch(addHoliday(form)).then(() => {
+      setShowModal(false);
+      setForm({ date: "", description: "" });
+    });
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Delete this holiday?")) {
+      dispatch(deleteHoliday(id));
+    }
+  };
+
+  return (
+    <div className="p-6">
+      {/* Page Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-xl font-bold">Holiday Management</h1>
+
+        <button
+          onClick={() => setShowModal(true)}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          <Plus size={18} /> Add Holiday
+        </button>
+      </div>
+
+      {/* Loading */}
+      {loading && <p className="text-gray-500">Loading...</p>}
+
+      {/* Table */}
+      <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        <table className="min-w-full">
+          <thead className="bg-gray-100 text-left text-sm font-semibold">
+            <tr>
+              <th className="px-6 py-3">Date</th>
+              <th className="px-6 py-3">Reason</th>
+              <th className="px-6 py-3">Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {holidays.length === 0 && (
+              <tr>
+                <td colSpan="3" className="px-6 py-6 text-center text-gray-500">
+                  No holidays found
+                </td>
+              </tr>
+            )}
+
+            {holidays.map((h) => (
+              <tr key={h.id} className="border-t">
+                <td className="px-6 py-4">{h.holiday_date}</td>
+                <td className="px-6 py-4">{h.reason}</td>
+
+                <td className="px-6 py-4">
+                  <button
+                    onClick={() => handleDelete(h.id)}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* --------------------------- Add Holiday Modal --------------------------- */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+          <div className="bg-white w-[400px] rounded-lg p-6 shadow-lg">
+            <h2 className="font-bold text-lg mb-4">Add Holiday</h2>
+
+            <div className="flex flex-col gap-3">
+              {/* Date Field */}
+              <div>
+                <label className="text-sm font-medium">Holiday Date</label>
+                <input
+                  type="date"
+                  className="w-full border p-2 rounded mt-1"
+                  value={form.date}
+                  onChange={(e) =>
+                    setForm({ ...form, date: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Description Field */}
+              <div>
+                <label className="text-sm font-medium">Reason</label>
+                <input
+                  type="text"
+                  placeholder="Ex: Diwali, Pongal..."
+                  className="w-full border p-2 rounded mt-1"
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Buttons */}
+              <div className="flex justify-end gap-3 mt-4">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 border rounded-lg hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={handleAddHoliday}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* ----------------------------------------------------------------------- */}
+    </div>
+  );
+
+  }
 function DailySlotsSection() { }
