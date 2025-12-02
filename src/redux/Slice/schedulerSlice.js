@@ -132,6 +132,36 @@ export const deleteHoliday = createAsyncThunk(
   }
 );
 
+// Fetch available dates (returns { available_dates: [...] })
+export const fetchAvailableDates = createAsyncThunk(
+  "dailySlots/fetchAvailableDates",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await api.get("/api/scheduler/available-dates/");
+      // safe-read
+      return res.data?.available_dates ?? [];
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to load available dates");
+    }
+  }
+);
+
+// Fetch slots for a date (paginated or plain)
+export const fetchSlotsByDate = createAsyncThunk(
+  "dailySlots/fetchSlotsByDate",
+  async (date, { rejectWithValue }) => {
+    try {
+      const res = await api.get("/api/scheduler/slots/", { params: { date } });
+      // API may return {results: [...] } or an array
+      const data = res.data;
+      const slots = data?.results ?? data ?? [];
+      return { date, slots };
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to load slots");
+    }
+  }
+);
+
 
 // ======================================================================
 // 📌 MAIN SLICE (ALL in ONE FILE)
@@ -142,6 +172,9 @@ const schedulerSlice = createSlice({
     slotMasters: [],
     workingDays: [],
     holidays: [],
+    availableDates: [],
+    dailySlots: [],
+    selectedDate: null,
     loading: false,
     error: null,
   },
@@ -261,9 +294,39 @@ const schedulerSlice = createSlice({
         state.holidays = state.holidays.filter(
           (h) => h.id !== action.payload
         );
-      });
+      })
+
+      // ===============================
+// AVAILABLE DATES
+// ===============================
+.addCase(fetchAvailableDates.pending, (state) => {
+  state.loading = true;
+})
+.addCase(fetchAvailableDates.fulfilled, (state, action) => {
+  state.loading = false;
+  state.availableDates = action.payload; // array of dates
+})
+.addCase(fetchAvailableDates.rejected, (state, action) => {
+  state.loading = false;
+  state.error = action.payload;
+})
 
 
+// ===============================
+// SLOTS BY DATE
+// ===============================
+.addCase(fetchSlotsByDate.pending, (state) => {
+  state.loading = true;
+})
+.addCase(fetchSlotsByDate.fulfilled, (state, action) => {
+  state.loading = false;
+  state.selectedDate = action.payload.date;
+  state.dailySlots = action.payload.slots; // list of slots
+})
+.addCase(fetchSlotsByDate.rejected, (state, action) => {
+  state.loading = false;
+  state.error = action.payload;
+})
 
   },
 });

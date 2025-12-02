@@ -2,8 +2,13 @@ import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchChildServices } from "../../redux/Slice/serviceSlice";
+import { useNavigate } from "react-router-dom";
 
 const UserChildServices = () => {
+  const navigate = useNavigate();
+  const goToBookingPage = () => {
+  navigate("/booking"); // your route path
+};
   const { gender, mainId } = useParams();
   const dispatch = useDispatch();
 
@@ -46,9 +51,12 @@ const UserChildServices = () => {
 
             <p className="text-lg font-bold mt-3">₹{item.price}</p>
 
-            <button className="mt-4 w-full bg-purple-600 text-white py-2 rounded-lg">
-              Book Now
-            </button>
+            <button
+            onClick={goToBookingPage}
+            className="mt-4 w-full bg-purple-600 text-white py-2 rounded-lg"
+          >
+            Book Now
+          </button>
           </div>
         ))}
       </div>
