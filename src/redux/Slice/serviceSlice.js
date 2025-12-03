@@ -79,12 +79,12 @@ export const deleteMainService = createAsyncThunk(
 // 5️⃣ Fetch children for a main service
 export const fetchChildServices = createAsyncThunk(
   "services/fetchChildServices",
-  async (mainId, { rejectWithValue }) => {
+  async (mainId, thunkAPI) => {
     try {
-      const res = await api.get(`/api/services/admin/main/${mainId}/child/`);
+      const res = await api.get(`/api/services/user/main/${mainId}/child/`);
       return { mainId, data: res.data };
     } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
+      return thunkAPI.rejectWithValue(err.response?.data || err.message);
     }
   }
 );
@@ -159,6 +159,7 @@ export const deleteChildService = createAsyncThunk(
 
 const initialState = {
   main: [],
+  mainServices: {},
   child: {}, // child[mainId] = []
   loading: false,
   error: null,
@@ -185,8 +186,18 @@ const serviceSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchMainServices.fulfilled, (state, action) => {
-        state.main = action.payload;
         state.loading = false;
+        const payload = action.payload;
+
+        // If thunk returned { genderId, services } (user-facing fetch), store by gender
+        if (payload && typeof payload === "object" && Object.prototype.hasOwnProperty.call(payload, "genderId")) {
+          const { genderId, services, data } = payload;
+          state.mainServices = state.mainServices || {};
+          state.mainServices[genderId] = services ?? data ?? [];
+        } else {
+          // Fallback: payload is the full main list (admin fetch)
+          state.main = payload;
+        }
       })
       .addCase(fetchMainServices.rejected, (state, action) => {
         state.error = action.payload;

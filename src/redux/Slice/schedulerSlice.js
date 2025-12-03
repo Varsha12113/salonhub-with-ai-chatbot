@@ -173,7 +173,7 @@ const schedulerSlice = createSlice({
     workingDays: [],
     holidays: [],
     availableDates: [],
-    dailySlots: [],
+     slotsByDate: [], 
     selectedDate: null,
     loading: false,
     error: null,

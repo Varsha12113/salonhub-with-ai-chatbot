@@ -3,22 +3,29 @@ import { Link } from "react-router-dom";
 import { FaMale, FaFemale } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { getGenders, getMainServices } from "../redux/Slice/genderSlice";
+import {
+  fetchGenders,
+  fetchMainServices,
+} from "../redux/Slice/userSlice";
 
 export default function Services() {
   const dispatch = useDispatch();
-  const { genders, mainServices } = useSelector((state) => state.gender);
+
+  const { genders, mainServices } = useSelector(
+    (state) => state.userServices
+  );
 
   const [groupedServices, setGroupedServices] = useState({});
 
   // Fetch genders on mount
   useEffect(() => {
-    dispatch(getGenders());
+    dispatch(fetchGenders());
   }, [dispatch]);
 
   // Fetch main services for each gender
   useEffect(() => {
     if (genders?.length > 0) {
-      genders.forEach((g) => dispatch(getMainServices(g.id)));
+      genders.forEach((g) => dispatch(fetchMainServices(g.id)));
     }
   }, [genders, dispatch]);
 
@@ -29,16 +36,14 @@ export default function Services() {
     const groups = {};
 
     genders?.forEach((g) => {
-      // If mainServices is an object keyed by gender id
-      const servicesArray = mainServices[g.id] || []; 
-      groups[g.name] = servicesArray;
+      groups[g.name] = mainServices[g.id] || [];
     });
 
     setGroupedServices(groups);
   }, [mainServices, genders]);
 
-  return (
-    <div
+  return(
+     <div
       className="relative min-h-screen bg-cover bg-center bg-fixed text-gray-800 py-12 px-4"
       style={{
         backgroundImage:
@@ -100,4 +105,5 @@ export default function Services() {
       </div>
     </div>
   );
+  
 }
