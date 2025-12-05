@@ -1,76 +1,65 @@
+// src/redux/slices/checkoutSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import api from "../../config/httphandler"; 
 
-// ✅ Fetch gender list
-export const fetchGenders = createAsyncThunk("booking/fetchGenders", async () => {
-  const res = await axios.get("http://127.0.0.1:8000/api/gender/");
-  return res.data;
-});
-
-// ✅ Fetch user details (username, email, contact, date, time)
-export const fetchUserDetails = createAsyncThunk(
-  "booking/fetchUserDetails",
-  async (_, { rejectWithValue }) => {
+// ================================================================
+// 📌 POST — Checkout Booking
+// ================================================================
+export const checkoutBooking = createAsyncThunk(
+  "checkout/checkoutBooking",
+  async (payload, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("access");
-      if (!token) return rejectWithValue("No token found");
-
-      const res = await axios.get("http://127.0.0.1:8000/api/user/profile/", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
+      const response = await api.post("/api/booking/checkout/", payload);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Checkout failed. Try again."
+      );
     }
   }
 );
 
-// ✅ Submit booking
-export const submitBooking = createAsyncThunk(
-  "booking/submitBooking",
-  async (bookingData, { rejectWithValue }) => {
-    try {
-      const token = localStorage.getItem("access");
-      const res = await axios.post("http://127.0.0.1:8000/api/booking/", bookingData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
-    }
-  }
-);
-
-const bookingSlice = createSlice({
-  name: "booking",
+// ================================================================
+// 📌 Slice
+// ================================================================
+const checkoutSlice = createSlice({
+  name: "checkout",
   initialState: {
-    genders: [],
-    user: {},
-    status: "idle",
+    loading: false,
     error: null,
-    successMessage: "",
+    successMessage: null,
   },
+
   reducers: {
-    clearSuccess(state) {
-      state.successMessage = "";
+    resetCheckout: (state) => {
+      state.loading = false;
+      state.error = null;
+      state.successMessage = null;
     },
   },
+
   extraReducers: (builder) => {
     builder
-      .addCase(fetchGenders.fulfilled, (state, action) => {
-        state.genders = action.payload;
+      // ==================== Pending ====================
+      .addCase(checkoutBooking.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.successMessage = null;
       })
-      .addCase(fetchUserDetails.fulfilled, (state, action) => {
-        state.user = action.payload;
+
+      // ==================== Fulfilled ====================
+      .addCase(checkoutBooking.fulfilled, (state, action) => {
+        state.loading = false;
+        state.successMessage = "Booking Confirmed!";
       })
-      .addCase(submitBooking.fulfilled, (state) => {
-        state.successMessage = "🎉 Appointment booked successfully!";
-      })
-      .addCase(submitBooking.rejected, (state, action) => {
-        state.error = action.payload;
+
+      // ==================== Rejected ====================
+      .addCase(checkoutBooking.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Checkout failed.";
       });
   },
 });
 
-export const { clearSuccess } = bookingSlice.actions;
-export default bookingSlice.reducer;
+export const { resetCheckout } = checkoutSlice.actions;
+export default checkoutSlice.reducer;

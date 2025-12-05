@@ -10,7 +10,14 @@ import { fetchAvailableDates } from "../../redux/Slice/schedulerSlice";
 import { fetchSlotsByDate } from "../../redux/Slice/schedulerSlice";
 import { useEffect, useState } from "react";
 
+import { checkoutBooking, resetCheckout } from "../../redux/Slice/bookingSlice";
+import { useNavigate, useLocation } from "react-router-dom";
+
 export default function Booking() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const serviceIdFromState = location?.state?.serviceId;
+
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     gender: "",
@@ -20,6 +27,9 @@ export default function Booking() {
     name: "",
     phone: "",
     email: "",
+    serviceId: serviceIdFromState || null,
+    slotId: null,
+     services: [],
   });
 
 
@@ -28,8 +38,11 @@ export default function Booking() {
   const prevStep = () => setStep(step - 1);
 
   const handleChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
-  };
+  setFormData((prev) => ({
+    ...prev,
+    [field]: value,
+  }));
+}
 
   const handleSubmit = () => {
     alert("Appointment Booked Successfully!");
@@ -40,8 +53,9 @@ export default function Booking() {
   const steps = [
     { id: 1, label: "Gender", icon: <FaVenusMars /> },
     { id: 2, label: "Date", icon: <FaCalendarAlt /> },
-    { id: 3, label: "slot", icon: <FaClock /> },
-    { id: 4, label: "Booking Details", icon: <FaUserCircle /> },
+    { id: 3, label: "Slot", icon: <FaClock /> },
+    // { id: 4, label: "Details", icon: <FaUserCircle /> },
+    { id: 4, label: "Confirm", icon: <FaUserCircle /> },
   ];
 
   return (
@@ -87,7 +101,7 @@ export default function Booking() {
           />
         )}
         {step === 2 && (
-          <Step3Date
+          <Step2Date
             formData={formData}
             onChange={handleChange}
             onNext={nextStep}
@@ -95,19 +109,26 @@ export default function Booking() {
           />
         )}
         {step === 3 && (
-          <Step4Time
+          <Step3Time
             formData={formData}
             onChange={handleChange}
             onNext={nextStep}
             onPrev={prevStep}
           />
         )}
+        {/* {step === 4 && (
+          <Step4Details
+            formData={formData}
+            onChange={handleChange}
+            onNext={nextStep}
+            onPrev={prevStep}
+          />
+        )} */}
         {step === 4 && (
-          <Step5Customer
+          <Step4Customer
             formData={formData}
             onChange={handleChange}
             onPrev={prevStep}
-            onSubmit={handleSubmit}
           />
         )}
       </div>
@@ -162,63 +183,63 @@ export default function Booking() {
 }
 
 
- function Step2Category({ formData, onChange, onNext, onPrev }) {
-  const { category, stylist } = formData || {};
+//  function Step2Category({ formData, onChange, onNext, onPrev }) {
+//   const { category, stylist } = formData || {};
 
-  const categories = [
-    'hair',
-    'makeup',
-    'waxing',
-    'mani-pedi',
-    'bridal',
-    'facial',
-    'beard',
-  ];
+//   const categories = [
+//     'hair',
+//     'makeup',
+//     'waxing',
+//     'mani-pedi',
+//     'bridal',
+//     'facial',
+//     'beard',
+//   ];
 
-  return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-semibold mb-4">Step 2 — Choose Category & Stylist</h2>
+//   return (
+//     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
+//       <h2 className="text-xl font-semibold mb-4">Step 2 — Choose Category & Stylist</h2>
 
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-        <select
-          value={category || ''}
-          onChange={(e) => onChange('category', e.target.value)}
-          className="w-full border rounded px-3 py-2"
-        >
-          <option value="">Select a category</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
-      </div>
+//       <div className="mb-4">
+//         <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+//         <select
+//           value={category || ''}
+//           onChange={(e) => onChange('category', e.target.value)}
+//           className="w-full border rounded px-3 py-2"
+//         >
+//           <option value="">Select a category</option>
+//           {categories.map((c) => (
+//             <option key={c} value={c}>{c}</option>
+//           ))}
+//         </select>
+//       </div>
 
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Stylist (optional)</label>
-        <input
-          value={stylist || ''}
-          onChange={(e) => onChange('stylist', e.target.value)}
-          placeholder="Enter stylist name or leave blank"
-          className="w-full border rounded px-3 py-2"
-        />
-      </div>
+//       <div className="mb-6">
+//         <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Stylist (optional)</label>
+//         <input
+//           value={stylist || ''}
+//           onChange={(e) => onChange('stylist', e.target.value)}
+//           placeholder="Enter stylist name or leave blank"
+//           className="w-full border rounded px-3 py-2"
+//         />
+//       </div>
 
-      <div className="flex justify-between">
-        <button onClick={onPrev} className="px-4 py-2 bg-gray-200 rounded">Back</button>
-        <button
-          onClick={onNext}
-          disabled={!category}
-          className="px-4 py-2 bg-purple-500 text-white rounded disabled:opacity-60"
-        >
-          Next
-        </button>
-      </div>
-    </div>
-  );
-}
+//       <div className="flex justify-between">
+//         <button onClick={onPrev} className="px-4 py-2 bg-gray-200 rounded">Back</button>
+//         <button
+//           onClick={onNext}
+//           disabled={!category}
+//           className="px-4 py-2 bg-purple-500 text-white rounded disabled:opacity-60"
+//         >
+//           Next
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
 
 
-function Step3Date({ formData, onChange, onNext, onPrev }) {
+function Step2Date({ formData, onChange, onNext, onPrev }) {
   const { date } = formData || {};
 
   const dispatch = useDispatch();
@@ -282,18 +303,19 @@ function Step3Date({ formData, onChange, onNext, onPrev }) {
       </div>
     </div>
   )
+
 }
 
- function Step4Time({ formData, onChange, onNext, onPrev }) {
-  const dispatch = useDispatch();
 
+
+function Step3Time({ formData, onChange, onNext, onPrev }) {
+  const dispatch = useDispatch();
   const selectedDate = formData?.date;
 
   const { slotsByDate, loading, error } = useSelector(
     (state) => state.scheduler
   );
 
-  // Fetch slots when date changes
   useEffect(() => {
     if (selectedDate) {
       dispatch(fetchSlotsByDate(selectedDate));
@@ -302,26 +324,40 @@ function Step3Date({ formData, onChange, onNext, onPrev }) {
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-semibold mb-4">Step 4 — Choose Time</h2>
+      <h2 className="text-xl font-semibold mb-4">Step 3 — Choose Time Slot</h2>
 
       {loading && <p className="text-gray-600 mb-4">Loading time slots...</p>}
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      {!loading && slotsByDate.length > 0 ? (
+      {!loading && Array.isArray(slotsByDate) && slotsByDate.length > 0 ? (
         <div className="mb-6 grid grid-cols-2 gap-2">
           {slotsByDate.map((slot) => (
-            <button
-              key={slot.time || slot}
-              onClick={() => onChange("time", slot.time || slot)}
-              className={`px-3 py-2 rounded border ${
-                formData.time === (slot.time || slot)
-                  ? "bg-purple-500 text-white"
-                  : "bg-white"
-              }`}
-            >
-              {slot.time || slot}
-            </button>
-          ))}
+  <button
+    key={slot.id}
+    onClick={() => {
+      onChange("slotId", slot.id);
+      onChange(
+        "time",
+        `${slot.slot_master.start_time} - ${slot.slot_master.end_time}`
+      );
+      onChange("date", slot.slot_date); // ✅ store slot_date too
+      onNext();
+    }}
+    className={`px-3 py-2 rounded border ${
+      formData.slotId === slot.id
+        ? "bg-purple-500 text-white"
+        : "bg-white"
+    }`}
+  >
+    {/* Show start/end time */}
+    <div>{slot.slot_master.start_time} - {slot.slot_master.end_time}</div>
+    {/* Show slot date */}
+    <div className="text-sm text-gray-500">{slot.slot_date}</div>
+    {/* Show status */}
+    <div className="text-xs text-green-600">{slot.status}</div>
+  </button>
+))}
+
         </div>
       ) : (
         !loading && <p>No slots available for this date.</p>
@@ -333,7 +369,7 @@ function Step3Date({ formData, onChange, onNext, onPrev }) {
         </button>
         <button
           onClick={onNext}
-          disabled={!formData.time}
+          disabled={loading || !slotsByDate?.length}
           className="px-4 py-2 bg-purple-500 text-white rounded disabled:opacity-60"
         >
           Next
@@ -341,39 +377,95 @@ function Step3Date({ formData, onChange, onNext, onPrev }) {
       </div>
     </div>
   );
+}
 
- }
 
- function Step5Customer({ formData, onChange, onPrev, onSubmit }) {
-  const { name, phone, email } = formData || {};
 
-  const canSubmit = name && phone && email;
+
+function Step4Customer({ formData }) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { loading, error, successMessage } = useSelector(
+    (state) => state.checkout
+  );
+
+  const handleConfirm = () => {
+    const payload = {
+      start_slot_id: formData.slotId,
+      services: formData.services.map((s) =>
+        typeof s === "object" ? { service_id: s.id } : { service_id: s }
+      ),
+    };
+    dispatch(checkoutBooking(payload));
+  };
+
+  useEffect(() => {
+    if (successMessage) {
+      navigate("/booking-success");
+      dispatch(resetCheckout());
+    }
+  }, [successMessage, navigate, dispatch]);
 
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-semibold mb-4">Step 5 — Customer Details</h2>
+    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow">
+      <h2 className="text-xl font-bold text-gray-800 mb-4">
+        Confirm Your Booking
+      </h2>
 
-      <div className="mb-3">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Full name</label>
-        <input value={name || ''} onChange={(e) => onChange('name', e.target.value)} className="w-full border px-3 py-2 rounded" />
-      </div>
+      {loading && <p className="text-purple-600">Processing...</p>}
+      {error && <p className="text-red-600">{error}</p>}
 
-      <div className="mb-3">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-        <input value={phone || ''} onChange={(e) => onChange('phone', e.target.value)} className="w-full border px-3 py-2 rounded" />
-      </div>
+      <div className="bg-gray-50 p-4 rounded-md border mb-4">
+  <p><strong>Date:</strong> {formData.date || "Not selected"}</p>
+  <p><strong>Time Slot:</strong> {formData.time || "Not selected"}</p>
+  <p><strong>Services:</strong> {formData.services?.length 
+    ? formData.services.map(s => s.name || s).join(", ") 
+    : "No services selected"}
+  </p>
+</div>
 
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-        <input value={email || ''} onChange={(e) => onChange('email', e.target.value)} className="w-full border px-3 py-2 rounded" />
-      </div>
-
-      <div className="flex justify-between">
-        <button onClick={onPrev} className="px-4 py-2 bg-gray-200 rounded">Back</button>
-        <button onClick={onSubmit} disabled={!canSubmit} className="px-4 py-2 bg-purple-500 text-white rounded disabled:opacity-60">Submit</button>
-      </div>
+      <button
+        onClick={handleConfirm}
+        disabled={loading || !formData.slotId || !formData.services?.length}
+        className="w-full bg-purple-600 text-white py-3 rounded-lg disabled:opacity-60"
+      >
+        {loading ? "Confirming..." : "Confirm Booking"}
+      </button>
     </div>
   );
 }
 
 }
+
+
+export function BookingSuccess() {
+  const navigate = useNavigate();
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-purple-50 to-white">
+      <div className="bg-white shadow-lg p-10 rounded-2xl text-center max-w-md">
+        <h1 className="text-3xl font-bold text-purple-600 mb-4">🎉 Booking Confirmed!</h1>
+
+        <p className="text-gray-600 mb-6">
+          Your appointment has been successfully scheduled.
+        </p>
+
+        <button
+          onClick={() => navigate("/booking-history")}
+          className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition"
+        >
+          View Booking History
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function Bookinghistory(){
+  return(
+    <div>
+      Booking History Page
+    </div>
+  )
+}
+

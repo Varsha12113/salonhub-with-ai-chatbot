@@ -484,131 +484,16 @@ function HolidaysSection() {
 
 
 
-// function DailySlotsSection() {
 
-// const dispatch = useDispatch();
 
-//   const { availableDates, dailySlots, selectedDate, loading } = useSelector(
-//     (state) => state.scheduler
-//   );
 
-//   const [activeDate, setActiveDate] = useState(null);
-
-//   // Load available dates on page load
-//   useEffect(() => {
-//     dispatch(fetchAvailableDates());
-//   }, [dispatch]);
-
-//   // Handle clicking a date
-//   const handleDateClick = (date) => {
-//     setActiveDate(date);
-//     dispatch(fetchSlotsByDate(date));
-//   };
-
-//  return (
-//     <div className="p-6 text-gray-800">
-//       {/* Page Title */}
-//       <div className="flex justify-between items-center mb-6">
-//         <h1 className="text-2xl font-semibold text-[#1A237E]">
-//           Daily Slots
-//         </h1>
-//       </div>
-
-//       {/* DATE PICKER BOX */}
-//       <div className="bg-white shadow rounded-xl p-5 border border-gray-200">
-//         <h2 className="text-lg font-medium text-gray-700 mb-3">
-//           Select a Date
-//         </h2>
-
-//         {/* Available Dates Scroll */}
-//         <div className="flex gap-3 overflow-x-auto pb-2">
-//           {availableDates.length === 0 && (
-//             <p className="text-gray-500">No available dates</p>
-//           )}
-
-//           {availableDates.map((date) => (
-//             <button
-//               key={date}
-//               onClick={() => handleDateClick(date)}
-//               className={`px-4 py-2 rounded-lg border text-sm min-w-[120px]
-//                 ${
-//                   activeDate === date
-//                     ? "bg-[#1A237E] text-white border-[#1A237E]"
-//                     : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
-//                 }
-//               `}
-//             >
-//               {date}
-//             </button>
-//           ))}
-//         </div>
-//       </div>
-
-//       {/* Slots Section */}
-//       <div className="mt-6">
-//         <h2 className="text-lg font-medium text-gray-700 mb-3">
-//           {selectedDate
-//             ? `Available Slots for ${selectedDate}`
-//             : "Select a date to view slots"}
-//         </h2>
-
-//         {/* LOADING */}
-//         {loading && (
-//           <p className="text-blue-600 text-sm font-medium">Loading slots...</p>
-//         )}
-
-//         {/* SLOT GRID */}
-//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-//           {dailySlots?.map((slot) => (
-//             <div
-//               key={slot.id}
-//               className={`p-4 rounded-xl border shadow-sm 
-//               ${
-//                 slot.status === "available"
-//                   ? "bg-green-50 border-green-400"
-//                   : "bg-red-50 border-red-400"
-//               }`}
-//             >
-//               {/* Time */}
-//               <p className="text-lg font-semibold text-gray-800">
-//                 {slot.slot_master?.start_time} - {slot.slot_master?.end_time}
-//               </p>
-
-//               {/* Status */}
-//               <p
-//                 className={`mt-1 text-sm font-medium ${
-//                   slot.status === "available"
-//                     ? "text-green-600"
-//                     : "text-red-600"
-//                 }`}
-//               >
-//                 {slot.status}
-//               </p>
-
-//               {/* Booked User */}
-//               {slot.status !== "available" && (
-//                 <p className="text-xs mt-1 text-gray-600">
-//                   Booked by: {slot.booked_by || "N/A"}
-//                 </p>
-//               )}
-//             </div>
-//           ))}
-//         </div>
-
-//         {/* EMPTY STATE */}
-//         {!loading && selectedDate && dailySlots.length === 0 && (
-//           <p className="text-gray-500 mt-4">No available slots for this date.</p>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
 
 
 function DailySlotsSection() {
   const dispatch = useDispatch();
 
-  const { availableDates, dailySlots, selectedDate, loading } = useSelector(
+  // provide safe defaults so `.length` and `.map` are always valid
+  const { availableDates = [], dailySlots = [], selectedDate, loading } = useSelector(
     (state) => state.scheduler
   );
 
@@ -619,15 +504,28 @@ function DailySlotsSection() {
     dispatch(fetchAvailableDates());
   }, [dispatch]);
 
+  // when availableDates arrive, set a sensible activeDate if none selected
+  useEffect(() => {
+    if (!activeDate && availableDates && availableDates.length > 0) {
+      // prefer selectedDate from state if present, otherwise first available date
+      setActiveDate(selectedDate || availableDates[0]);
+      // optionally fetch slots for that date
+      const dateToLoad = selectedDate || availableDates[0];
+      if (dateToLoad) dispatch(fetchSlotsByDate(dateToLoad));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availableDates, selectedDate, dispatch]);
+
   // Handle clicking a date
   const handleDateClick = (date) => {
+    if (!date) return;
     setActiveDate(date);
     dispatch(fetchSlotsByDate(date));
   };
 
   // ⏮ Previous date
   const handlePrevDate = () => {
-    if (!activeDate) return;
+    if (!activeDate || !Array.isArray(availableDates) || availableDates.length === 0) return;
     const index = availableDates.indexOf(activeDate);
     if (index > 0) {
       const prevDate = availableDates[index - 1];
@@ -637,9 +535,9 @@ function DailySlotsSection() {
 
   // ⏭ Next date
   const handleNextDate = () => {
-    if (!activeDate) return;
+    if (!activeDate || !Array.isArray(availableDates) || availableDates.length === 0) return;
     const index = availableDates.indexOf(activeDate);
-    if (index < availableDates.length - 1) {
+    if (index >= 0 && index < availableDates.length - 1) {
       const nextDate = availableDates[index + 1];
       handleDateClick(nextDate);
     }
@@ -716,7 +614,7 @@ function DailySlotsSection() {
               className={`px-4 py-2 rounded-lg border text-sm min-w-[120px]
                 ${
                   activeDate === date
-                    ? "bg-purple-600 text-white bg-purple-600"
+                    ? "bg-purple-600 text-white"
                     : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
                 }
               `}
@@ -734,7 +632,7 @@ function DailySlotsSection() {
             {selectedDate ? `Slots for ${selectedDate}` : "Select a date to view slots"}
           </h2>
 
-          {dailySlots.length > 0 && (
+          {Array.isArray(dailySlots) && dailySlots.length > 0 && (
             <p className="text-sm text-gray-600">{dailySlots.length} slots</p>
           )}
         </div>
@@ -750,7 +648,7 @@ function DailySlotsSection() {
 
         {/* SLOT GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-          {dailySlots?.map((slot) => (
+          {(dailySlots || []).map((slot) => (
             <div
               key={slot.id}
               className={`p-4 rounded-xl border shadow-sm relative
@@ -792,14 +690,13 @@ function DailySlotsSection() {
         </div>
 
         {/* EMPTY STATE */}
-        {!loading && selectedDate && dailySlots.length === 0 && (
+        {!loading && selectedDate && (dailySlots || []).length === 0 && (
           <p className="text-gray-500 mt-4">No slots available for this date.</p>
         )}
       </div>
     </div>
   );
 }
-
 
 
  

@@ -6,8 +6,8 @@ import { useNavigate } from "react-router-dom";
 
 const UserChildServices = () => {
   const navigate = useNavigate();
-  const goToBookingPage = () => {
-  navigate("/booking"); // your route path
+  const goToBookingPage = (serviceId) => {
+  navigate("/booking", { state: { serviceId } });
 };
   const { gender, mainId } = useParams();
   const dispatch = useDispatch();
@@ -52,7 +52,7 @@ const UserChildServices = () => {
             <p className="text-lg font-bold mt-3">₹{item.price}</p>
 
             <button
-            onClick={goToBookingPage}
+            onClick={() => goToBookingPage(item.id)}
             className="mt-4 w-full bg-purple-600 text-white py-2 rounded-lg"
           >
             Book Now

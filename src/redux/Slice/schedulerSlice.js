@@ -146,21 +146,20 @@ export const fetchAvailableDates = createAsyncThunk(
   }
 );
 
-// Fetch slots for a date (paginated or plain)
 export const fetchSlotsByDate = createAsyncThunk(
   "dailySlots/fetchSlotsByDate",
   async (date, { rejectWithValue }) => {
     try {
       const res = await api.get("/api/scheduler/slots/", { params: { date } });
-      // API may return {results: [...] } or an array
-      const data = res.data;
-      const slots = data?.results ?? data ?? [];
+      const slots = res.data?.results ?? []; // ✅ always array
       return { date, slots };
     } catch (err) {
       return rejectWithValue(err.response?.data || "Failed to load slots");
     }
   }
 );
+
+
 
 
 // ======================================================================
@@ -318,15 +317,16 @@ const schedulerSlice = createSlice({
 .addCase(fetchSlotsByDate.pending, (state) => {
   state.loading = true;
 })
+
 .addCase(fetchSlotsByDate.fulfilled, (state, action) => {
   state.loading = false;
   state.selectedDate = action.payload.date;
-  state.dailySlots = action.payload.slots; // list of slots
+  state.slotsByDate = action.payload.slots; // list of slots
 })
 .addCase(fetchSlotsByDate.rejected, (state, action) => {
   state.loading = false;
   state.error = action.payload;
-})
+});
 
   },
 });

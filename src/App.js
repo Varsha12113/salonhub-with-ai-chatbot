@@ -10,9 +10,7 @@ import LandingPage from "./pages/LandingPage";
 import AboutPage from "./pages/AboutPage.jsx";
 import Contact from "./pages/Contact.jsx";
 import Services from "./pages/Services.jsx";
-
 import Booking from "./pages/Booking/Booking.jsx";
-
 import Cart from "./pages/Cart";
 import Payment from "./pages/Payment.jsx";
 import Dashboard from "./pages/Dashboard";
@@ -37,11 +35,9 @@ import AdminServices from "./pages/admin/AdminServices.jsx";
 import AdminAnalytics from "./pages/admin/AdminAnalytics.jsx";
 import Scheduler from "./pages/admin/scheduler.jsx";
 
-
 // User Pages
 import UserPanel from "./pages/User/UserPanel.jsx";
 import UserDashboard from "./pages/User/UserDashboard.jsx";
-import BookingPage from "./pages/BookingPage.jsx";
 
 export default function App() {
   return (
@@ -64,8 +60,7 @@ export default function App() {
           
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<Contact />} />
-         <Route path="/booking" element={<Booking />} />
-         <Route path="/booking/page" element={<BookingPage />} />
+          <Route path="/booking" element={<Booking />} />
           {/* 🔹 Dynamic Child Services */}
          <Route path="/services/:gender" element={<UserMainServices />} />
          <Route path="/services/:gender/:mainId" element={<UserChildServices />} />
