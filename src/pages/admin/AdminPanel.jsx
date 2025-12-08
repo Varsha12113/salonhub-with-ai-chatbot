@@ -6,6 +6,7 @@ import Sidebar from "./Sidebar";
 import AdminNavbar from "./AdminNavbar"; // make sure the path is correct
 
 export default function AdminPanel() {
+  console.log("Rendering AdminPanel");
   const { user, role } = useSelector((state) => state.auth);
 
   return (

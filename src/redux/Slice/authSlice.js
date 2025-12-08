@@ -63,12 +63,14 @@ export const registerUser = createAsyncThunk(
 // ---------------------------------------------------------
 const storedUser = getFromStorage("user");
 const storedToken = getFromStorage("token");
-const storedRole = getFromStorage("role");
+
+const storedRole = getFromStorage("role") || null;
+
 
 const initialState = {
   user: storedUser || null,
   token: storedToken || null,
-  role: storedRole || null,
+  role: storedRole,
   loading: false,
   error: null,
 };
@@ -101,19 +103,22 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.access;
-        const roleId = action.payload.user.role;
-const roleMap = { 1: "admin", 2: "user" };
+    state.loading = false;
+    state.user = action.payload.user;
+    state.token = action.payload.access;
 
-state.role = roleMap[roleId];
+    const roleId = action.payload.user.role;
+    const roleMap = { 1: "admin", 2: "user" };
+    const roleName = roleMap[roleId];
 
-        saveToStorage("user", action.payload.user);
-        saveToStorage("token", action.payload.access);
-        saveToStorage("refreshToken", action.payload.refresh);
-        saveToStorage("role", action.payload.user.role);
-      })
+    state.role = roleName;
+
+    saveToStorage("user", action.payload.user);
+    saveToStorage("token", action.payload.access);
+    saveToStorage("refreshToken", action.payload.refresh);
+    saveToStorage("role", roleName);   // 🔥 store string instead of number
+})
+
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Login failed";
@@ -129,7 +134,13 @@ state.role = roleMap[roleId];
         state.loading = false;
         state.user = action.payload.user || null;
         state.token = action.payload.access || null;
-        state.role = action.payload.user?.role || null;
+       const roleId = action.payload.user?.role;
+const roleMap = { 1: "admin", 2: "user" };
+const roleName = roleMap[roleId];
+
+state.role = roleName;
+saveToStorage("role", roleName);
+
       })
       .addCase(registerAdmin.rejected, (state, action) => {
         state.loading = false;
@@ -143,11 +154,18 @@ state.role = roleMap[roleId];
         state.error = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload.user || null;
-        state.token = action.payload.access || null;
-        state.role = action.payload.user?.role || null;
-      })
+    state.loading = false;
+    state.user = action.payload.user || null;
+    state.token = action.payload.access || null;
+
+    const roleId = action.payload.user?.role;
+    const roleMap = { 1: "admin", 2: "user" };
+    const roleName = roleMap[roleId];
+
+    state.role = roleName;
+    saveToStorage("role", roleName);
+})
+
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Registration failed";

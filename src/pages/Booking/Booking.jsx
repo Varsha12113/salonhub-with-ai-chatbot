@@ -17,32 +17,56 @@ export default function Booking() {
   const navigate = useNavigate();
   const location = useLocation();
   const serviceIdFromState = location?.state?.serviceId;
+  const serviceNameFromState = location?.state?.serviceName;
+
+
+ console.log("FULL location.state:", location.state);
+  console.log("serviceIdFromState:", serviceIdFromState);
+  console.log("serviceNameFromState:", serviceNameFromState);
+
+
+
+  useEffect(() => {
+    console.log("location.state:", location.state); 
+  if (serviceIdFromState && serviceNameFromState) {  // Add serviceNameFromState check
+    setFormData((prev) => ({
+      ...prev,
+      services: [{ id: serviceIdFromState, name: serviceNameFromState }],
+    }));
+  }
+}, [serviceIdFromState, serviceNameFromState]);
+
 
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    gender: "",
-    stylist: "",
-    date: "",
-    time: "",
-    name: "",
-    phone: "",
-    email: "",
-    serviceId: serviceIdFromState || null,
-    slotId: null,
-     services: [],
-  });
+  const [formData, setFormData] = useState(() => ({
+  gender: "",
+  stylist: "",
+  date: "",
+  time: "",
+  name: "",
+  phone: "",
+  email: "",
+  serviceId: location?.state?.serviceId || null,
+  slotId: null,
+  services: location?.state?.serviceId
+    ? [{ id: location.state.serviceId, name: location.state.serviceName }]
+    : [],
+}));
 
 
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
 
-  const handleChange = (field, value) => {
-  setFormData((prev) => ({
-    ...prev,
-    [field]: value,
-  }));
-}
+ const handleChange = (field, value) => {
+  setFormData((prev) => {
+    return {
+      ...prev,
+      [field]: value,
+      services: prev.services,  // <-- preserve services always
+    };
+  });
+};
 
   const handleSubmit = () => {
     alert("Appointment Booked Successfully!");
@@ -183,60 +207,7 @@ export default function Booking() {
 }
 
 
-//  function Step2Category({ formData, onChange, onNext, onPrev }) {
-//   const { category, stylist } = formData || {};
 
-//   const categories = [
-//     'hair',
-//     'makeup',
-//     'waxing',
-//     'mani-pedi',
-//     'bridal',
-//     'facial',
-//     'beard',
-//   ];
-
-//   return (
-//     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
-//       <h2 className="text-xl font-semibold mb-4">Step 2 — Choose Category & Stylist</h2>
-
-//       <div className="mb-4">
-//         <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-//         <select
-//           value={category || ''}
-//           onChange={(e) => onChange('category', e.target.value)}
-//           className="w-full border rounded px-3 py-2"
-//         >
-//           <option value="">Select a category</option>
-//           {categories.map((c) => (
-//             <option key={c} value={c}>{c}</option>
-//           ))}
-//         </select>
-//       </div>
-
-//       <div className="mb-6">
-//         <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Stylist (optional)</label>
-//         <input
-//           value={stylist || ''}
-//           onChange={(e) => onChange('stylist', e.target.value)}
-//           placeholder="Enter stylist name or leave blank"
-//           className="w-full border rounded px-3 py-2"
-//         />
-//       </div>
-
-//       <div className="flex justify-between">
-//         <button onClick={onPrev} className="px-4 py-2 bg-gray-200 rounded">Back</button>
-//         <button
-//           onClick={onNext}
-//           disabled={!category}
-//           className="px-4 py-2 bg-purple-500 text-white rounded disabled:opacity-60"
-//         >
-//           Next
-//         </button>
-//       </div>
-//     </div>
-//   );
-// }
 
 
 function Step2Date({ formData, onChange, onNext, onPrev }) {
@@ -386,9 +357,12 @@ function Step4Customer({ formData }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { loading, error, successMessage } = useSelector(
+  const { loading, error, successMessage,bookingData  } = useSelector(
     (state) => state.checkout
   );
+
+  
+
 
   const handleConfirm = () => {
     const payload = {
@@ -419,10 +393,22 @@ function Step4Customer({ formData }) {
       <div className="bg-gray-50 p-4 rounded-md border mb-4">
   <p><strong>Date:</strong> {formData.date || "Not selected"}</p>
   <p><strong>Time Slot:</strong> {formData.time || "Not selected"}</p>
-  <p><strong>Services:</strong> {formData.services?.length 
-    ? formData.services.map(s => s.name || s).join(", ") 
-    : "No services selected"}
-  </p>
+ <p>
+  <strong>Services:</strong>{" "}
+  {formData?.services?.length
+    ? formData.services
+        .map((s) => s.name || `Service #${s.id}`)
+        .join(", ")
+    : bookingData?.services?.length
+    ? bookingData.services
+        .map((s) =>
+          s.service_name || s.name || `Service #${s.service_id}`
+        )
+        .join(", ")
+    : "Not selected"}
+</p>
+
+
 </div>
 
       <button

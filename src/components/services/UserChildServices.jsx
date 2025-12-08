@@ -6,8 +6,13 @@ import { useNavigate } from "react-router-dom";
 
 const UserChildServices = () => {
   const navigate = useNavigate();
-  const goToBookingPage = (serviceId) => {
-  navigate("/booking", { state: { serviceId } });
+  const goToBookingPage = (serviceId, serviceName) => {
+  navigate("/booking", { 
+    state: { 
+      serviceId, 
+      serviceName  // Pass the service title/name
+    } 
+  });
 };
   const { gender, mainId } = useParams();
   const dispatch = useDispatch();
@@ -51,12 +56,12 @@ const UserChildServices = () => {
 
             <p className="text-lg font-bold mt-3">₹{item.price}</p>
 
-            <button
-            onClick={() => goToBookingPage(item.id)}
-            className="mt-4 w-full bg-purple-600 text-white py-2 rounded-lg"
-          >
-            Book Now
-          </button>
+           <button
+  onClick={() => goToBookingPage(item.id, item.title)}  // 👈 Pass item.title
+  className="mt-4 w-full bg-purple-600 text-white py-2 rounded-lg"
+>
+  Book Now
+</button>
           </div>
         ))}
       </div>
