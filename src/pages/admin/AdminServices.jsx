@@ -425,6 +425,7 @@ export default function AdminServices() {
                     <th className="px-4 py-2">Name</th>
                     <th className="px-4 py-2">Price</th>
                     <th className="px-4 py-2">Duration</th>
+                     <th className="px-4 py-2">Description</th>  {/* <-- add this */}
                     <th className="px-4 py-2">Image</th>
                     <th className="px-4 py-2">Actions</th>
                   </tr>
@@ -447,8 +448,9 @@ export default function AdminServices() {
                       <tr key={c.id}>
                         <td className="px-4 py-2">{c.id}</td>
                         <td className="px-4 py-2">{c.child_service_name}</td>
-                        <td className="px-4 py-2">₹{c.price}</td>
+                            <td className="px-4 py-2">₹{c.price}</td>
                         <td className="px-4 py-2">{c.duration ? `${c.duration} min` : "-"}</td>
+                         <td className="px-4 py-2">{c.child_service_description || "-"}</td>
                         <td className="px-4 py-2">
                           {c.image && (
                             <img

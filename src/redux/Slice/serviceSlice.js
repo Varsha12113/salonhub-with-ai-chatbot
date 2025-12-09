@@ -82,6 +82,7 @@ export const fetchChildServices = createAsyncThunk(
   async (mainId, thunkAPI) => {
     try {
       const res = await api.get(`/api/services/user/main/${mainId}/child/`);
+            console.log("API child services response:", mainId, res.data); // 👈 here
       return { mainId, data: res.data };
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data || err.message);

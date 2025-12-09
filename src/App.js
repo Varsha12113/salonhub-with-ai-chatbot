@@ -18,7 +18,7 @@ import CalendarView from "./pages/CalendarView";
 import UserRegister from "./pages/Registration";
 import Register from "./pages/admin/AdminRegister.jsx";
 import UserMainServices from "./components/services/UserMainServices.jsx";
-import UserChildServices from "./components/services/UserChildServices.jsx";
+import ChildServicesPage from "./pages/ChildServicesPage.jsx";
 
 
 
@@ -63,7 +63,7 @@ export default function App() {
           <Route path="/booking" element={<Booking />} />
           {/* 🔹 Dynamic Child Services */}
          <Route path="/services/:gender" element={<UserMainServices />} />
-         <Route path="/services/:gender/:mainId" element={<UserChildServices />} />
+         <Route path="/services/:gender/:mainId" element={<ChildServicesPage  />} />
 
 
           
