@@ -26,7 +26,7 @@ import ChildServicesPage from "./pages/ChildServicesPage.jsx";
 // Admin Pages
 import AdminPanel from "./pages/admin/AdminPanel";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import Appointments from "./pages/admin/Appointments";
+
 import AddProvider from "./pages/admin/AddProvider";
 import ProviderList from "./pages/admin/ProviderList";
 import AdminOrders from "./pages/admin/AdminOrders.jsx";
@@ -61,6 +61,7 @@ export default function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/booking" element={<Booking />} />
+          <Route path="/booking-success" element={<Booking />} />
           {/* 🔹 Dynamic Child Services */}
          <Route path="/services/:gender" element={<UserMainServices />} />
          <Route path="/services/:gender/:mainId" element={<ChildServicesPage  />} />
@@ -88,7 +89,7 @@ export default function App() {
             <Route path="/admin" element={<AdminPanel />}>
               <Route index element={<AdminDashboard />} />
               <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="appointments" element={<Appointments />} />
+              
               <Route path="add-provider" element={<AddProvider />} />
               <Route path="providers" element={<ProviderList />} />
               <Route path="orders" element={<AdminOrders />} />

@@ -79,14 +79,21 @@ export default function CartDrawer({ isOpen, onClose }) {
   <div className="flex gap-2">
     {/* Proceed to Booking Button */}
     <button
-      onClick={() => {
-        onClose();
-        navigate('/booking?modal=true');
-      }}
-      className="flex-1 px-3 py-2 bg-white text-purple-700 rounded-md border border-purple-200 text-center"
-    >
-      Proceed to Booking
-    </button>
+  onClick={() => {
+    if (!items.length) return;
+    const first = items[0]; // or whichever item is selected
+    onClose();
+    navigate("/booking", {
+      state: {
+        serviceId: first.id,
+        serviceName: first.name,
+      },
+    });
+  }}
+  className="flex-1 px-3 py-2 bg-white text-purple-700 rounded-md border border-purple-200 text-center"
+>
+  Proceed to Booking
+</button>
     
   </div>
 </div>

@@ -18,40 +18,28 @@ export default function Booking() {
   const location = useLocation();
   const serviceIdFromState = location?.state?.serviceId;
   const serviceNameFromState = location?.state?.serviceName;
-
+    const user = useSelector((state) => state.auth.user); 
 
  console.log("FULL location.state:", location.state);
   console.log("serviceIdFromState:", serviceIdFromState);
   console.log("serviceNameFromState:", serviceNameFromState);
 
-
-
-  useEffect(() => {
-    console.log("location.state:", location.state); 
-  if (serviceIdFromState && serviceNameFromState) {  // Add serviceNameFromState check
-    setFormData((prev) => ({
-      ...prev,
-      services: [{ id: serviceIdFromState, name: serviceNameFromState }],
-    }));
-  }
-}, [serviceIdFromState, serviceNameFromState]);
-
-
-  const [step, setStep] = useState(1);
+   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(() => ({
-  gender: "",
-  stylist: "",
-  date: "",
-  time: "",
-  name: "",
-  phone: "",
-  email: "",
-  serviceId: location?.state?.serviceId || null,
-  slotId: null,
-  services: location?.state?.serviceId
-    ? [{ id: location.state.serviceId, name: location.state.serviceName }]
-    : [],
-}));
+    gender: "",
+    stylist: "",
+    date: "",
+    time: "",
+    username: user?.username || "",      // 👈 prefill name
+    phone: user?.phone || "",    // 👈 prefill phone
+    email: user?.email || "",    // 👈 prefill email
+    serviceId: serviceIdFromState || null,
+    slotId: null,
+    services: serviceIdFromState
+      ? [{ id: serviceIdFromState, name: serviceNameFromState }]
+      : [],
+  }));
+
 
 
 
@@ -59,14 +47,15 @@ export default function Booking() {
   const prevStep = () => setStep(step - 1);
 
  const handleChange = (field, value) => {
-  setFormData((prev) => {
-    return {
-      ...prev,
-      [field]: value,
-      services: prev.services,  // <-- preserve services always
-    };
-  });
+  setFormData(prev => ({
+    ...prev,
+    [field]: value,
+  }));
 };
+
+
+
+
 
   const handleSubmit = () => {
     alert("Appointment Booked Successfully!");
@@ -353,23 +342,47 @@ function Step3Time({ formData, onChange, onNext, onPrev }) {
 
 
 
-function Step4Customer({ formData }) {
+function Step4Customer({ formData, onChange, onPrev }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { loading, error, successMessage,bookingData  } = useSelector(
+
+console.log({
+  slotId: formData.slotId,
+  services: formData.services,
+  name: formData.username,
+  phone: formData.phone,
+});
+
+  const user = useSelector((state) => state.auth.user); // registration data
+  const { loading, error, successMessage, bookingData } = useSelector(
     (state) => state.checkout
   );
 
-  
+   //Prefill from user once
+ 
 
+  const selectedServices =
+    formData?.services?.length
+      ? formData.services
+      : bookingData?.services || [];
+
+  const servicesText =
+    selectedServices.length > 0
+      ? selectedServices
+          .map((s) => s.name || s.service_name || `Service #${s.id || s.service_id}`)
+          .join(", ")
+      : "Not selected";
 
   const handleConfirm = () => {
     const payload = {
       start_slot_id: formData.slotId,
-      services: formData.services.map((s) =>
-        typeof s === "object" ? { service_id: s.id } : { service_id: s }
-      ),
+      services: selectedServices.map((s) => ({
+        service_id: s.id || s.service_id,
+      })),
+      customer_name: formData.username,
+      customer_email: formData.email,
+      customer_phone: formData.phone,
     };
     dispatch(checkoutBooking(payload));
   };
@@ -382,46 +395,75 @@ function Step4Customer({ formData }) {
   }, [successMessage, navigate, dispatch]);
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">
-        Confirm Your Booking
-      </h2>
+    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
+      <h2 className="text-xl font-bold mb-4">Confirm Your Booking</h2>
 
-      {loading && <p className="text-purple-600">Processing...</p>}
-      {error && <p className="text-red-600">{error}</p>}
+      
 
-      <div className="bg-gray-50 p-4 rounded-md border mb-4">
-  <p><strong>Date:</strong> {formData.date || "Not selected"}</p>
-  <p><strong>Time Slot:</strong> {formData.time || "Not selected"}</p>
- <p>
-  <strong>Services:</strong>{" "}
-  {formData?.services?.length
-    ? formData.services
-        .map((s) => s.name || `Service #${s.id}`)
-        .join(", ")
-    : bookingData?.services?.length
-    ? bookingData.services
-        .map((s) =>
-          s.service_name || s.name || `Service #${s.service_id}`
-        )
-        .join(", ")
-    : "Not selected"}
-</p>
+      {/* Contact details (from registration, editable) */}
+      <div className="space-y-3 mb-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Name
+          </label>
+          <input
+            type="text"
+            value={formData.username}
+            onChange={(e) => onChange("name", e.target.value)}
+            className="mt-1 w-full border rounded px-3 py-2 text-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
+          <input
+            type="email"
+            value={formData.email}
+            onChange={(e) => onChange("email", e.target.value)}
+            className="mt-1 w-full border rounded px-3 py-2 text-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Mobile
+          </label>
+          <input
+            type="tel"
+            value={formData.phone}
+            onChange={(e) => onChange("phone", e.target.value)}
+            className="mt-1 w-full border rounded px-3 py-2 text-sm"
+          />
+        </div>
+      </div>
 
+      {loading && <p className="text-purple-600 mb-2">Processing...</p>}
+      {error && <p className="text-red-600 mb-2">{error}</p>}
 
-</div>
-
-      <button
-        onClick={handleConfirm}
-        disabled={loading || !formData.slotId || !formData.services?.length}
-        className="w-full bg-purple-600 text-white py-3 rounded-lg disabled:opacity-60"
-      >
-        {loading ? "Confirming..." : "Confirm Booking"}
-      </button>
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={onPrev}
+          className="px-4 py-2 bg-gray-200 rounded text-sm"
+        >
+          Back
+        </button>
+        <button
+          onClick={handleConfirm}
+          disabled={
+            loading ||
+            !formData.slotId ||
+            !selectedServices.length ||
+            !formData.username ||
+            !formData.phone
+          }
+          className="px-6 py-2 bg-green-500 text-white rounded text-sm font-semibold disabled:opacity-60"
+        >
+          {loading ? "Confirming..." : "CONFIRM"}
+        </button>
+      </div>
     </div>
   );
 }
-
 }
 
 
