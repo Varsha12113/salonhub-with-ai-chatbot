@@ -2,20 +2,28 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { User, LogOut } from "lucide-react";
-import { logout } from "../../redux/Slice/authSlice"; // adjust path
+import {logoutUser} from "../../redux/Slice/authSlice";
 import { useNavigate } from "react-router-dom";
-
+import { store } from "../../redux/store/store";
 export default function AdminNavbar() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); 
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
+  const { user, role } = useSelector((state) => state.auth);
+    console.log("Logging out as:", role); 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/login"); // redirect to login after logout
-  };
+  const handleLogout = async () => {
+  console.log("Logging out as:", role); // role from useSelector
 
+  try {
+    await dispatch(logoutUser()).unwrap(); // call backend logout
+  } catch (e) {
+    console.error("logoutUser error:", e);
+  } finally {
+    dispatch(logoutUser());                    // clear auth state + storage
+    navigate("/login");                    // redirect after logout
+  }
+};
   return (
     <nav className="w-full bg-gradient-to-r from-purple-500 to-purple-600 shadow-md h-16 flex justify-end items-center px-6 relative z-50">
       {user && (

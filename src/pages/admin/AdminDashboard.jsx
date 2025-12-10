@@ -1,4 +1,5 @@
 import React from "react";
+import toast from "react-hot-toast";
 import {
   TrendingUp,
   DollarSign,
@@ -35,7 +36,32 @@ export default function AdminDashboard() {
     },
   };
 
+export default function AdminDashboard() {
+  const sampleNotification = {
+    booking_id: 7,
+    message: "New Booking #7 by user123 on 2025-12-10",
+    created_at: "2025-12-10 06:40:23",
+    status: "pending",
+  };
+
+  const showBookingToast = (notification) => {
+    toast.custom(
+      <div className="max-w-sm w-full bg-white shadow-lg rounded-2xl p-4 border-l-4 border-purple-500">
+        <p className="text-sm font-semibold text-gray-800">
+          New Booking #{notification.booking_id}
+        </p>
+        <p className="text-xs text-gray-600 mt-1">{notification.message}</p>
+        <p className="text-[11px] text-gray-400 mt-1">
+          {notification.created_at}
+        </p>
+      </div>
+    );
+  };
+
+//create slice for notification 
+
   return (
+    
    <div className="space-y-6 pt-16 md:pt-0 px-4 sm:px-6 lg:px-8">
       {/* ===== Page Header ===== */}
       <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>

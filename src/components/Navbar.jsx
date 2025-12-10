@@ -15,7 +15,7 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const { genders, mainServices } = useSelector((state) => state.gender);
   const { user,token, role } = useSelector((state) => state.auth);
-  console.log("AUTH STATE:", { user, token, role });
+  
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null);

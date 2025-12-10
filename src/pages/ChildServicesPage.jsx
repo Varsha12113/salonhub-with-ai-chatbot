@@ -63,8 +63,9 @@ const ChildServicesPage = ({ addToCart }) => {
             className="mt-auto inline-flex justify-center rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700"
             onClick={() => handleAddToCart(service)}
           >
-            Add to Cart
+            Book Now
           </button>
+          
         </div>
       </div>
     ))}

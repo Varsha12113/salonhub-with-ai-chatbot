@@ -27,7 +27,7 @@ export const loginUser = createAsyncThunk(
 );
 
 // ---------------------------------------------------------
-// 🔹 LOGOUT USER
+// 🔹 LOGOUT USER & admin
 // ---------------------------------------------------------
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
@@ -191,7 +191,7 @@ const authSlice = createSlice({
         state.error = action.payload || "Registration failed";
       })
 
-
+// 🔴 LOGOUT
    .addCase(logoutUser.fulfilled, (state) => {
       // same cleanup as logout reducer
       state.user = null;
