@@ -11,11 +11,15 @@ export const saveToStorage = (key, value) => {
 };
 
 export const getFromStorage = (key) => {
+  const value = localStorage.getItem(key);
+  if (value === null) return null;
+
   try {
-    const value = localStorage.getItem(key);
-    return value ? JSON.parse(value) : null;
+    // If it's JSON, parse it
+    return JSON.parse(value);
   } catch (err) {
-    return null;
+    // If parsing fails, return raw string (JWT, etc.)
+    return value;
   }
 };
 

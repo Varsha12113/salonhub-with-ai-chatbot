@@ -27,6 +27,31 @@ export const loginUser = createAsyncThunk(
 );
 
 // ---------------------------------------------------------
+// 🔹 LOGOUT USER
+// ---------------------------------------------------------
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const refresh = getFromStorage("refreshToken");
+      
+      if (!refresh) {
+        return { detail: "No refresh token" };
+      }
+
+      const data = await httpPost("/api/auth/logout/", { refresh });
+      // { detail: "Logout successful" }
+      return data;
+    } catch (err) {
+      console.error("Logout error:", err);
+      return rejectWithValue(err.detail || "Logout failed");
+    }
+  }
+);
+
+
+
+// ---------------------------------------------------------
 // 🔹 REGISTER ADMIN
 // ---------------------------------------------------------
 export const registerAdmin = createAsyncThunk(
@@ -107,11 +132,9 @@ const authSlice = createSlice({
     state.user = action.payload.user;
     state.token = action.payload.access;
 
-    const roleId = action.payload.user.role;
-    const roleMap = { 1: "admin", 2: "user" };
-    const roleName = roleMap[roleId];
-
-    state.role = roleName;
+   // backend already gives "admin" or "user"
+  const roleName = action.payload.user.role;      // <-- use directly
+  state.role = roleName;
 
     saveToStorage("user", action.payload.user);
     saveToStorage("token", action.payload.access);
@@ -130,18 +153,18 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(registerAdmin.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload.user || null;
-        state.token = action.payload.access || null;
-       const roleId = action.payload.user?.role;
-const roleMap = { 1: "admin", 2: "user" };
-const roleName = roleMap[roleId];
+   .addCase(registerAdmin.fulfilled, (state, action) => {
+  state.loading = false;
+  state.user = action.payload.user || null;
+  state.token = action.payload.access || null;
 
-state.role = roleName;
-saveToStorage("role", roleName);
+  const roleName = action.payload.user?.role;     // "admin"
+  state.role = roleName;
+  saveToStorage("role", roleName);
+})
 
-      })
+
+      
       .addCase(registerAdmin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Registration failed";
@@ -154,25 +177,48 @@ saveToStorage("role", roleName);
         state.error = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
-    state.loading = false;
-    state.user = action.payload.user || null;
-    state.token = action.payload.access || null;
+  state.loading = false;
+  state.user = action.payload.user || null;
+  state.token = action.payload.access || null;
 
-    const roleId = action.payload.user?.role;
-    const roleMap = { 1: "admin", 2: "user" };
-    const roleName = roleMap[roleId];
-
-    state.role = roleName;
-    saveToStorage("role", roleName);
+  const roleName = action.payload.user?.role;     // "user"
+  state.role = roleName;
+  saveToStorage("role", roleName);
 })
 
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Registration failed";
-      });
-  },
-});
+      })
 
+
+   .addCase(logoutUser.fulfilled, (state) => {
+      // same cleanup as logout reducer
+      state.user = null;
+      state.token = null;
+      state.role = null;
+      state.loading = false;
+      state.error = null;
+
+      removeFromStorage("user");
+      removeFromStorage("token");
+      removeFromStorage("refreshToken");
+      removeFromStorage("role");
+    })
+    .addCase(logoutUser.rejected, (state, action) => {
+      // even if API fails, clear local auth
+      state.user = null;
+      state.token = null;
+      state.role = null;
+      state.loading = false;
+      state.error = action.payload || "Logout failed";
+      removeFromStorage("user");
+      removeFromStorage("token");
+      removeFromStorage("refreshToken");
+      removeFromStorage("role");
+    })
+ }
+});
 // ---------------------------------------------------------
 // 🔹 EXPORTS
 // ---------------------------------------------------------

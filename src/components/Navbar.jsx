@@ -6,14 +6,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { getGenders, getMainServices } from "../redux/Slice/genderSlice";
 import { getCartCount } from "../utils/cart";
 import CartDrawer from "./CartDrawer";
-import { logout } from "../redux/Slice/authSlice"; // import logout
+
 import { User } from "lucide-react";
+import { logoutUser } from "../redux/Slice/authSlice";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { genders, mainServices } = useSelector((state) => state.gender);
-  const { user } = useSelector((state) => state.auth);
+  const { user,token, role } = useSelector((state) => state.auth);
+  console.log("AUTH STATE:", { user, token, role });
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null);
@@ -32,11 +34,17 @@ const Navbar = () => {
     setSubDropdownOpen(subDropdownOpen === menu ? null : menu);
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async () => {
+  try {
+    const res = await dispatch(logoutUser()).unwrap(); // talks to /api/auth/logout/
+    console.log("logoutUser result:", res);
+  } catch (e) {
+    console.error("logoutUser error:", e);
+  } finally {
+    dispatch(logoutUser());          // clear Redux + localStorage
     navigate("/login");
-  };
-
+  }
+};
   useEffect(() => {
     dispatch(getGenders());
     const handler = () => setCartCount(getCartCount());
@@ -83,7 +91,7 @@ const Navbar = () => {
             </li>
           </ul>
 
-          {/* ---------- Cart + User Avatar / Login ---------- */}
+          {/* ---------- Cart ---------- */}
           <div className="flex items-center space-x-6">
             <button
               onClick={() => setDrawerOpen(true)}
@@ -97,12 +105,51 @@ const Navbar = () => {
             </button>
 
       {/* Login Button */}
+    {/* Login / Profile */}
+{user ? (
+  <div className="relative">
     <button
-      onClick={() => {navigate('/login'); }}
-      className="px-3 py-2 bg-purple-600 text-white rounded-md"
-    >
-      Login
-    </button>
+  onClick={() => setAvatarDropdownOpen(prev => !prev)}
+  className="flex items-center gap-2 px-3 py-2 hover:bg-purple-100 
+             text-purple-700 rounded-full border  transition"
+>
+  <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center text-sm font-semibold">
+    {user.username ? user.username.charAt(0).toUpperCase() : "U"}
+  </div>
+
+  <span className="hidden sm:inline text-sm font-medium">
+    {user.username }
+  </span>
+
+  <ChevronDown className="w-4 h-4" />
+</button>
+
+    {avatarDropdownOpen && (
+      <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg text-sm">
+        <button
+          onClick={() => navigate("/profile")}
+          className="w-full text-left px-4 py-2 hover:bg-gray-50"
+        >
+          My Profile
+        </button>
+        <button
+          onClick={handleLogout}
+          className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+        >
+          Logout
+        </button>
+      </div>
+    )}
+  </div>
+) : (
+  <button
+    onClick={() => navigate("/login")}
+    className="px-3 py-2 bg-purple-600 text-white rounded-md"
+  >
+    Login
+  </button>
+)}
+
           </div>
 
           {/* ---------- Mobile Menu Toggle ---------- */}

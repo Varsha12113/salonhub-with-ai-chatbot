@@ -23,11 +23,10 @@ export default function CartDrawer({ isOpen, onClose }) {
     setItems([]);
   };
 
-  const total = items.reduce((s, it) => {
-    const p = String(it.price || '').replace(/[^0-9]/g, '');
-    const num = Number(p) || 0;
-    return s + num;
-  }, 0);
+  const total = items.reduce((sum, it) => {
+  const num = parseFloat(String(it.price).replace(/[^0-9.]/g, "")) || 0;
+  return sum + num;
+}, 0);
 
   return (
     <div

@@ -214,7 +214,7 @@ function Step2Date({ formData, onChange, onNext, onPrev }) {
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-semibold mb-4">Step 3 — Choose Date</h2>
+      <h2 className="text-xl font-semibold mb-4">Step 2 — Choose Date</h2>
 
       {/* Loading */}
       {loading && <p className="text-gray-600 mb-4">Loading dates...</p>}
@@ -232,17 +232,19 @@ function Step2Date({ formData, onChange, onNext, onPrev }) {
           </label>
 
           <select
-            value={date || ""}
-            onChange={(e) => onChange("date", e.target.value)}
-            className="w-full border rounded px-3 py-2"
-          >
-            <option value="">-- Select --</option>
-            {availableDates.map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
+  value={date || ""}
+  onChange={(e) => onChange("date", e.target.value)}
+  className="w-full px-3 py-2 border-2 border-purple-300 rounded-lg bg-white text-gray-900 text-sm
+             focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-purple-500
+             hover:border-purple-400 transition shadow-sm"
+>
+  <option value="">-- Select --</option>
+  {availableDates.map((d) => (
+    <option key={d} value={d}>
+      {d}
+    </option>
+  ))}
+</select>
         </div>
       ) : (
         !loading && <p className="text-gray-600">No available dates.</p>
@@ -305,7 +307,7 @@ function Step3Time({ formData, onChange, onNext, onPrev }) {
     }}
     className={`px-3 py-2 rounded border ${
       formData.slotId === slot.id
-        ? "bg-purple-500 text-white"
+        ? "bg-purple-200 text-white"
         : "bg-white"
     }`}
   >
@@ -396,7 +398,7 @@ console.log({
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">Confirm Your Booking</h2>
+      <h2 className="text-xl font-bold mb-4">Provide Your Details</h2>
 
       
 
