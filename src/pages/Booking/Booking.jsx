@@ -12,8 +12,11 @@ import { useEffect, useState } from "react";
 
 import { checkoutBooking, resetCheckout } from "../../redux/Slice/bookingSlice";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { clearCart } from "../../utils/cart";
 
 export default function Booking() {
+  const { bookingData } = useSelector((state) => state.checkout);
   const navigate = useNavigate();
   const location = useLocation();
   const serviceIdFromState = location?.state?.serviceId;
@@ -67,8 +70,8 @@ export default function Booking() {
     { id: 1, label: "Gender", icon: <FaVenusMars /> },
     { id: 2, label: "Date", icon: <FaCalendarAlt /> },
     { id: 3, label: "Slot", icon: <FaClock /> },
-    // { id: 4, label: "Details", icon: <FaUserCircle /> },
-    { id: 4, label: "Confirm", icon: <FaUserCircle /> },
+    { id: 4, label: "Customer", icon: <FaUserCircle /> },
+    { id: 5, label: "Confirm", icon: <FaUserCircle /> }, // new step
   ];
 
   return (
@@ -129,21 +132,23 @@ export default function Booking() {
             onPrev={prevStep}
           />
         )}
-        {/* {step === 4 && (
-          <Step4Details
+        {step === 4 && (
+          <Step4Customer
             formData={formData}
             onChange={handleChange}
             onNext={nextStep}
             onPrev={prevStep}
           />
-        )} */}
-        {step === 4 && (
-          <Step4Customer
-            formData={formData}
-            onChange={handleChange}
-            onPrev={prevStep}
-          />
         )}
+        {step === 5 && (
+  <Step5Confirm
+    bookingData={bookingData}
+    formData={formData}
+    onConfirm={(summary) => {
+      navigate("/booking-success", { state: { booking: summary } });
+    }}
+  />
+)}
       </div>
 
       {/* Progress Indicator */}
@@ -344,7 +349,7 @@ function Step3Time({ formData, onChange, onNext, onPrev }) {
 
 
 
-function Step4Customer({ formData, onChange, onPrev }) {
+function Step4Customer({ formData, onChange, onPrev, onNext }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -390,11 +395,24 @@ console.log({
   };
 
   useEffect(() => {
-    if (successMessage) {
-      navigate("/booking-success");
-      dispatch(resetCheckout());
-    }
-  }, [successMessage, navigate, dispatch]);
+  if (
+    bookingData &&
+    (bookingData.status === "pending" || bookingData.status === "confirmed")
+  ){
+
+    // 1) clear cart storage
+    clearCart();
+
+    // 2) notify any open Cart components
+    window.dispatchEvent(new Event("cartUpdated"));
+
+    // 3) move to Step 5 (confirmation) or navigate to success page
+    onNext(); // or navigate("/booking-success")
+    
+
+  }
+}, [bookingData, onNext]);
+
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
@@ -466,36 +484,139 @@ console.log({
     </div>
   );
 }
+
+
+
+function Step5Confirm({ bookingData, formData, onConfirm }) {
+  if (!bookingData) {
+    return (
+      <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
+        <p className="text-gray-700">
+          No booking data found. Please complete previous steps.
+        </p>
+      </div>
+    );
+  }
+
+  const summary = {
+    name: formData.username || bookingData.username,
+    email: formData.email || bookingData.email,
+    location: bookingData.location || "Your Salon Name",
+    services: bookingData.services || [],
+    date: bookingData.date,
+    timeSlot: bookingData.time,
+    stylist: bookingData.stylist || "NO PREFERENCE",
+  };
+
+
+  return (
+    <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow">
+      <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
+        Book Your Appointment
+      </h2>
+
+      <div className="border-t border-b py-8 mt-4">
+        <p className="mb-4 text-gray-800">
+          Hi <span className="font-semibold">{summary.name}</span>,
+        </p>
+        <p className="mb-6 text-gray-700">
+          Please see below the summary of your appointment:
+        </p>
+
+        <div className="space-y-1 text-sm md:text-base text-gray-800">
+          <p>
+            <span className="font-semibold">Location :</span> {summary.location}
+          </p>
+          <p>
+            <span className="font-semibold">Service(s) :</span>{" "}
+            {summary.services.join(", ")}
+          </p>
+          <p>
+            <span className="font-semibold">Date :</span> {summary.date}
+          </p>
+          <p>
+            <span className="font-semibold">Time Slot :</span>{" "}
+            {summary.timeSlot}
+          </p>
+          <p>
+            <span className="font-semibold">Preferred Stylist :</span>{" "}
+            {summary.stylist}
+          </p>
+        </div>
+
+        {/* Purple confirmation button */}
+        <button
+        onClick={() => onConfirm(summary)}   
+        className="mt-8 w-full rounded-lg bg-purple-600 py-3 text-white font-semibold tracking-wide hover:bg-purple-700 transition"
+      >
+        CONFIRM
+      </button>
+      </div>
+
+    </div>
+  );
+}
+
 }
 
 
-export function BookingSuccess() {
-  const navigate = useNavigate();
-  return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-purple-50 to-white">
-      <div className="bg-white shadow-lg p-10 rounded-2xl text-center max-w-md">
-        <h1 className="text-3xl font-bold text-purple-600 mb-4">🎉 Booking Confirmed!</h1>
 
-        <p className="text-gray-600 mb-6">
-          Your appointment has been successfully scheduled.
+ export function BookingSuccess() {
+  const location = useLocation();
+  const booking = location.state?.booking;
+
+  if (!booking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-700">
+          No booking data found.{" "}
+          <Link to="/" className="text-purple-600 underline">Go home</Link>
         </p>
+      </div>
+    );
+  }
 
-        <button
-          onClick={() => navigate("/booking-history")}
-          className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition"
-        >
-          View Booking History
-        </button>
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-8 md:p-10">
+        <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-6">
+          Book Your Appointment
+        </h2>
+
+        <div className="border-t border-b py-8 mt-4">
+          <p className="mb-4 text-gray-800">
+            Hi <span className="font-semibold">{booking.name}</span>,
+          </p>
+          <p className="mb-6 text-gray-700">
+            Please see below the summary of your appointment:
+          </p>
+
+          <div className="space-y-1 text-sm md:text-base text-gray-800">
+            <p><span className="font-semibold">Location :</span> {booking.location}</p>
+            <p><span className="font-semibold">Service(s) :</span> {booking.services?.join(", ")}</p>
+            <p><span className="font-semibold">Date :</span> {booking.date}</p>
+            <p><span className="font-semibold">Time Slot :</span> {booking.timeSlot}</p>
+            <p>
+              <span className="font-semibold">Preferred Stylist :</span>{" "}
+              {booking.stylist || "NO PREFERENCE"}
+            </p>
+          </div>
+
+          <p className="mt-6 text-gray-700">
+            Thank you for booking with us. A confirmation has been sent to{" "}
+            <span className="font-semibold">{booking.email}</span>.
+          </p>
+        </div>
+
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Thank you for booking with us!
+        </p>
       </div>
     </div>
   );
 }
 
-export function Bookinghistory(){
-  return(
-    <div>
-      Booking History Page
-    </div>
-  )
-}
+
+
+
 

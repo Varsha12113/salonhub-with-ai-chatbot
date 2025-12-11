@@ -18,7 +18,7 @@ import UserRegister from "./pages/Registration";
 import Register from "./pages/admin/AdminRegister.jsx";
 import UserMainServices from "./components/services/UserMainServices.jsx";
 import ChildServicesPage from "./pages/ChildServicesPage.jsx";
-
+// import {BookingSuccess} from "./pages/Booking/Booking.jsx";
 
 
 
@@ -36,7 +36,7 @@ import Scheduler from "./pages/admin/scheduler.jsx";
 
 // User Pages
 import UserPanel from "./pages/User/UserPanel.jsx";
-import UserDashboard from "./pages/User/UserDashboard.jsx";
+
 
 export default function App() {
   return (
@@ -56,11 +56,11 @@ export default function App() {
         <Route element={<MainLayout />}>
           {/* Public Pages */}
            <Route path="/" element={<LandingPage />} /> 
-          
+            
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/booking" element={<Booking />} />
-          <Route path="/booking-success" element={<Booking />} />
+          {/* <Route path="/booking-success" element={<BookingSuccess  />} /> */}
           {/* 🔹 Dynamic Child Services */}
          <Route path="/services/:gender" element={<UserMainServices />} />
          <Route path="/services/:gender/:mainId" element={<ChildServicesPage  />} />
@@ -104,8 +104,7 @@ export default function App() {
           ============================= */}
           {/* <Route element={<ProtectedRoute allowedRoles={["user"]} />}> */}
             <Route path="/user" element={<UserPanel />}>
-              <Route index element={<UserDashboard />} />
-              <Route path="dashboard" element={<UserDashboard />} />
+              
               {/* <Route path="userregister" element={<Registration />} /> */}
             </Route>
           {/* </Route> */}
