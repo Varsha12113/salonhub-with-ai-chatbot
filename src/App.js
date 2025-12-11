@@ -13,8 +13,7 @@ import Services from "./pages/Services.jsx";
 import Booking from "./pages/Booking/Booking.jsx";
 import Cart from "./pages/Cart";
 import Payment from "./pages/Payment.jsx";
-import Dashboard from "./pages/Dashboard";
-import CalendarView from "./pages/CalendarView";
+import Dashboard from "./pages/Dashboard"
 import UserRegister from "./pages/Registration";
 import Register from "./pages/admin/AdminRegister.jsx";
 import UserMainServices from "./components/services/UserMainServices.jsx";
@@ -27,8 +26,8 @@ import ChildServicesPage from "./pages/ChildServicesPage.jsx";
 import AdminPanel from "./pages/admin/AdminPanel";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
-import AddProvider from "./pages/admin/AddProvider";
-import ProviderList from "./pages/admin/ProviderList";
+// import AddProvider from "./pages/admin/AddProvider";
+
 import AdminOrders from "./pages/admin/AdminOrders.jsx";
 import AdminCustomers from "./pages/admin/AdminCustomers.jsx";
 import AdminServices from "./pages/admin/AdminServices.jsx";
@@ -79,7 +78,7 @@ export default function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/calendar" element={<CalendarView />} />
+            
           </Route>
 
           {/* =============================
@@ -89,9 +88,9 @@ export default function App() {
             <Route path="/admin" element={<AdminPanel />}>
               <Route index element={<AdminDashboard />} />
               <Route path="dashboard" element={<AdminDashboard />} />
+{/*               
+              <Route path="add-provider" element={<AddProvider />} /> */}
               
-              <Route path="add-provider" element={<AddProvider />} />
-              <Route path="providers" element={<ProviderList />} />
               <Route path="orders" element={<AdminOrders />} />
               <Route path="customers" element={<AdminCustomers />} />
               <Route path="services" element={<AdminServices />} />

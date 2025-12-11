@@ -11,26 +11,15 @@ export default function AdminPanel() {
   const { user, role } = useSelector((state) => state.auth);
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-     <div className="flex">
-      <Toaster position="top-right" /> {/* toast container */}
+     <div className="flex min-h-screen">
+      <Toaster position="top-right" />
 
       <Sidebar />
 
-      <main className="flex-1 bg-gray-50 min-h-screen">
-        <Outlet /> {/* AdminDashboard, Orders, etc. */}
-      </main>
-    </div>
-
-      {/* Main content area */}
-      <div className="flex-1 flex flex-col">
-        {/* Navbar */}
-        {user && role === "admin" && <AdminNavbar />}
-
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          <Outlet />
+      <div className="flex-1 flex flex-col bg-gray-50">
+        <AdminNavbar />          {/* visible on ALL /admin pages */}
+        <main className="flex-1 p-4 md:p-6 lg:p-8">
+          <Outlet />             {/* AdminDashboard, Orders, Customers, ... */}
         </main>
       </div>
     </div>

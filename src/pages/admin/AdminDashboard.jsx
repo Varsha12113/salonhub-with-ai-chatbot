@@ -1,5 +1,6 @@
-import React from "react";
+import React,{useEffect}from "react";
 import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 import {
   TrendingUp,
   DollarSign,
@@ -10,10 +11,28 @@ import {
 } from "lucide-react";
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
+import {
+  fetchAdminNotifications,
+  acceptBooking,
+  declineBooking,
+} from "../../redux/Slice/adminNotificationsSlice";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export default function AdminDashboard() {
+  const dispatch = useDispatch();
+  const { items: notifications } = useSelector(
+    (state) => state.adminNotifications
+  );
+
+  const handleAccept = (bookingId) => {
+    dispatch(acceptBooking(bookingId));
+  };
+
+  const handleDecline = (bookingId) => {
+    dispatch(declineBooking(bookingId));
+  };
+
   // Sample chart data
   const data = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -36,33 +55,57 @@ export default function AdminDashboard() {
     },
   };
 
-export default function AdminDashboard() {
-  const sampleNotification = {
-    booking_id: 7,
-    message: "New Booking #7 by user123 on 2025-12-10",
-    created_at: "2025-12-10 06:40:23",
-    status: "pending",
-  };
+ const showBookingToast = (notification) => {
+  toast.custom(
+    <div className="max-w-sm w-full bg-white shadow-lg rounded-2xl p-4 border-l-4 border-purple-500">
+      <p className="text-sm font-semibold text-gray-800">
+        New Booking #{notification.booking_id}
+      </p>
+      <p className="text-xs text-gray-600 mt-1">{notification.message}</p>
+      <p className="text-[11px] text-gray-400 mt-1">
+        {notification.created_at}
+      </p>
 
-  const showBookingToast = (notification) => {
-    toast.custom(
-      <div className="max-w-sm w-full bg-white shadow-lg rounded-2xl p-4 border-l-4 border-purple-500">
-        <p className="text-sm font-semibold text-gray-800">
-          New Booking #{notification.booking_id}
-        </p>
-        <p className="text-xs text-gray-600 mt-1">{notification.message}</p>
-        <p className="text-[11px] text-gray-400 mt-1">
-          {notification.created_at}
-        </p>
+      <div className="flex gap-2 mt-3">
+        <button
+          onClick={() => handleAccept(notification.booking_id)}
+          className="px-3 py-1 text-xs rounded bg-green-600 text-white"
+        >
+          Accept
+        </button>
+        <button
+          onClick={() => handleDecline(notification.booking_id)}
+          className="px-3 py-1 text-xs rounded bg-red-600 text-white"
+        >
+          Decline
+        </button>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
-//create slice for notification 
+ useEffect(() => {
+    dispatch(fetchAdminNotifications())
+      .unwrap()
+      .then((data) => {
+              console.log("NOTIFICATIONS DATA:", data);
+        data.forEach((n) => {
+          if (n.status === "pending") showBookingToast(n);
+        });
+      })
+      .catch(() => {});
+        
+  }, [dispatch]);
+ 
 
   return (
-    
-   <div className="space-y-6 pt-16 md:pt-0 px-4 sm:px-6 lg:px-8">
+     <div className="space-y-6 pt-16 md:pt-0 px-4 sm:px-6 lg:px-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+
+   
+      </div>
+   
       {/* ===== Page Header ===== */}
       <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
 

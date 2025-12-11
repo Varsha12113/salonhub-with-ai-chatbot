@@ -24,14 +24,29 @@ const ChildServicesPage = ({ addToCart }) => {
 
 
   const handleAddToCart = (service) => {
-    addToCartUtil({
-      id: service.id,
-      name: service.child_service_name,
-      price: service.price,
-      duration: service.duration,
-      image: service.image,
-    });
-  };
+  // 1. Read existing cart from localStorage
+  const existingCart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  // 2. Check if this service is already in cart (by id)
+  const alreadyInCart = existingCart.some(
+    (item) => item.id === service.id
+  );
+
+  if (alreadyInCart) {
+    // Option A: just ignore / show a message
+    alert("This service is already in your cart");
+    return;
+  }
+
+  // 3. If not in cart, add it using your util
+  addToCartUtil({
+    id: service.id,
+    name: service.child_service_name,
+    price: service.price,
+    duration: service.duration,
+    image: service.image,
+  });
+};
 
   if (loading) return <p className="text-center mt-5">Loading services...</p>;
   if (error) return <p className="text-center mt-5 text-danger">{error}</p>;
