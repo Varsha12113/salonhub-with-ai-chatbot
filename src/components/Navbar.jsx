@@ -109,29 +109,45 @@ const Navbar = () => {
 {user ? (
   <div className="relative">
     <button
-  onClick={() => setAvatarDropdownOpen(prev => !prev)}
-  className="flex items-center gap-2 px-3 py-2 hover:bg-purple-100 
-             text-purple-700 rounded-full border  transition"
->
-  <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center text-sm font-semibold">
-    {user.username ? user.username.charAt(0).toUpperCase() : "U"}
-  </div>
-
-  <span className="hidden sm:inline text-sm font-medium">
-    {user.username }
-  </span>
-
-  <ChevronDown className="w-4 h-4" />
-</button>
+      onClick={() => setAvatarDropdownOpen(prev => !prev)}
+      className="flex items-center gap-2 px-3 py-2 hover:bg-purple-100 
+                 text-purple-700 rounded-full border transition"
+    >
+      <div className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-sm font-semibold flex-shrink-0 ${
+        role === 'admin' ? 'bg-red-600' : 'bg-purple-600'
+      }`}>
+        {user.username ? user.username.charAt(0).toUpperCase() : "U"}
+      </div>
+      <span className="hidden sm:inline text-sm font-medium truncate max-w-20">
+        {user.username}
+        {role === 'admin' && <span className="ml-1 text-xs bg-red-100 text-red-800 px-1 rounded">Admin</span>}
+      </span>
+      <ChevronDown className="w-4 h-4" />
+    </button>
 
     {avatarDropdownOpen && (
-      <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg text-sm">
-        <button
-          onClick={() => navigate("/profile")}
-          className="w-full text-left px-4 py-2 hover:bg-gray-50"
-        >
-          My Profile
-        </button>
+      <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg text-sm z-50">
+        {role === 'admin' ? (
+          <>
+            <div className="px-4 py-2 border-b border-gray-100 bg-red-50">
+              <span className="text-sm font-semibold text-red-800">Admin Panel</span>
+            </div>
+            <button onClick={() => navigate("/admin/dashboard")} className="w-full text-left px-4 py-2 hover:bg-red-50">
+              Dashboard
+            </button>
+            <button onClick={() => navigate("/admin/users")} className="w-full text-left px-4 py-2 hover:bg-red-50">
+              Manage Users
+            </button>
+            <button onClick={() => navigate("/admin/services")} className="w-full text-left px-4 py-2 hover:bg-red-50">
+              Manage Services
+            </button>
+          </>
+        ) : (
+          <button onClick={() => navigate("/profile")} className="w-full text-left px-4 py-2 hover:bg-gray-50">
+            My Profile
+          </button>
+        )}
+        <div className="border-t border-gray-100"></div>
         <button
           onClick={handleLogout}
           className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
@@ -141,7 +157,8 @@ const Navbar = () => {
       </div>
     )}
   </div>
-) : (
+) 
+ : (
   <button
     onClick={() => navigate("/login")}
     className="px-3 py-2 bg-purple-600 text-white rounded-md"
