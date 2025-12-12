@@ -4,6 +4,7 @@ import AboutSection from "./AboutSection";
 import ReviewSection from "./ReviewSection";
 
 export default function LandingPage() {
+  console.log("LandingPage rendered");
   return (
     <div>
   <HeroSection />

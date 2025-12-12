@@ -15,6 +15,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { clearCart } from "../../utils/cart";
 
+
 export default function Booking() {
   const { bookingData } = useSelector((state) => state.checkout);
   const navigate = useNavigate();
@@ -487,7 +488,10 @@ console.log({
 
 
 
+
 function Step5Confirm({ bookingData, formData, onConfirm }) {
+  const navigate = useNavigate();
+
   if (!bookingData) {
     return (
       <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
@@ -508,6 +512,10 @@ function Step5Confirm({ bookingData, formData, onConfirm }) {
     stylist: bookingData.stylist || "NO PREFERENCE",
   };
 
+  const handleConfirm = () => {
+    onConfirm(summary); // Call parent's onConfirm if needed
+    navigate('/booking-success'); // No state needed!
+  };
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow">
@@ -544,15 +552,13 @@ function Step5Confirm({ bookingData, formData, onConfirm }) {
           </p>
         </div>
 
-        {/* Purple confirmation button */}
         <button
-        onClick={() => onConfirm(summary)}   
-        className="mt-8 w-full rounded-lg bg-purple-600 py-3 text-white font-semibold tracking-wide hover:bg-purple-700 transition"
-      >
-        CONFIRM
-      </button>
+          onClick={handleConfirm}
+          className="mt-8 w-full rounded-lg bg-purple-600 py-3 text-white font-semibold tracking-wide hover:bg-purple-700 transition"
+        >
+          CONFIRM
+        </button>
       </div>
-
     </div>
   );
 }
@@ -561,61 +567,54 @@ function Step5Confirm({ bookingData, formData, onConfirm }) {
 
 
 
- export function BookingSuccess() {
-  const location = useLocation();
-  const booking = location.state?.booking;
+ 
 
-  if (!booking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-700">
-          No booking data found.{" "}
-          <Link to="/" className="text-purple-600 underline">Go home</Link>
-        </p>
-      </div>
-    );
-  }
-
+export function BookingSuccess() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-8 md:p-10">
-        <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-6">
-          Book Your Appointment
-        </h2>
-
-        <div className="border-t border-b py-8 mt-4">
-          <p className="mb-4 text-gray-800">
-            Hi <span className="font-semibold">{booking.name}</span>,
-          </p>
-          <p className="mb-6 text-gray-700">
-            Please see below the summary of your appointment:
-          </p>
-
-          <div className="space-y-1 text-sm md:text-base text-gray-800">
-            <p><span className="font-semibold">Location :</span> {booking.location}</p>
-            <p><span className="font-semibold">Service(s) :</span> {booking.services?.join(", ")}</p>
-            <p><span className="font-semibold">Date :</span> {booking.date}</p>
-            <p><span className="font-semibold">Time Slot :</span> {booking.timeSlot}</p>
-            <p>
-              <span className="font-semibold">Preferred Stylist :</span>{" "}
-              {booking.stylist || "NO PREFERENCE"}
-            </p>
-          </div>
-
-          <p className="mt-6 text-gray-700">
-            Thank you for booking with us. A confirmation has been sent to{" "}
-            <span className="font-semibold">{booking.email}</span>.
-          </p>
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 md:p-10 text-center">
+        {/* Success Icon */}
+        <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
         </div>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
-          Thank you for booking with us!
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+          Booking Confirmed!
+        </h2>
+
+        <p className="text-xl text-gray-600 mb-8">
+          Your appointment has been successfully booked.
+        </p>
+
+        <p className="text-gray-700 mb-8">
+          A confirmation email has been sent to your registered email address.
+        </p>
+
+        <div className="space-y-4">
+          <Link
+            to="/"
+            className="block w-full bg-purple-600 text-white py-3 px-6 rounded-lg hover:bg-purple-700 transition font-semibold text-lg"
+          >
+            Back to Home
+          </Link>
+          
+          <Link
+            to="/services"
+            className="block w-full border border-gray-300 py-3 px-6 rounded-lg hover:bg-gray-50 transition font-medium text-gray-700"
+          >
+            Book Another Appointment
+          </Link>
+        </div>
+
+        <p className="mt-8 text-xs text-gray-500">
+          Thank you for choosing us! 💇‍♀️
         </p>
       </div>
     </div>
   );
 }
-
 
 
 

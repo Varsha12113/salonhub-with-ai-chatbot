@@ -50,7 +50,6 @@ export const logoutUser = createAsyncThunk(
 );
 
 
-
 // ---------------------------------------------------------
 // 🔹 REGISTER ADMIN
 // ---------------------------------------------------------
@@ -95,8 +94,8 @@ const storedRole = getFromStorage("role") || null;
 const initialState = {
   user: storedUser || null,
   token: storedToken || null,
-  role: storedRole,
-  loading: false,
+  role: storedRole || null,
+  loading: !!storedToken, // if token exists, we will verify; else not loading
   error: null,
 };
 
@@ -190,7 +189,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Registration failed";
       })
-
+      
 // 🔴 LOGOUT
    .addCase(logoutUser.fulfilled, (state) => {
       // same cleanup as logout reducer
@@ -218,6 +217,7 @@ const authSlice = createSlice({
       removeFromStorage("role");
     })
  }
+ 
 });
 // ---------------------------------------------------------
 // 🔹 EXPORTS

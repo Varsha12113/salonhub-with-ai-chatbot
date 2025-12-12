@@ -29,12 +29,10 @@ const handleSubmit = async (e) => {
     const role = result.payload.user.role;
 
     if (role === "admin") {
-      navigate("/admin/dashboard");
-    } else if (role === "user") {
-      navigate("/");
-    } else {
-      navigate("/");
-    }
+      navigate("/admin/dashboard",{ replace: true });
+    } else  {
+      navigate("/",{ replace: true });
+    } 
   }
 };
 

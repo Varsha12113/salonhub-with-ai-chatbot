@@ -55,8 +55,8 @@ export default function AdminDashboard() {
     },
   };
 
- const showBookingToast = (notification) => {
-  toast.custom(
+const showBookingToast = (notification) => {
+  toast.custom((t) => (  // Add (t) parameter here
     <div className="max-w-sm w-full bg-white shadow-lg rounded-2xl p-4 border-l-4 border-purple-500">
       <p className="text-sm font-semibold text-gray-800">
         New Booking #{notification.booking_id}
@@ -68,21 +68,30 @@ export default function AdminDashboard() {
 
       <div className="flex gap-2 mt-3">
         <button
-          onClick={() => handleAccept(notification.booking_id)}
+          type="button"  // Add explicit type
+          onClick={() => {
+            handleAccept(notification.booking_id);
+            toast.dismiss(t.id);  // Close toast after action
+          }}
           className="px-3 py-1 text-xs rounded bg-green-600 text-white"
         >
           Accept
         </button>
         <button
-          onClick={() => handleDecline(notification.booking_id)}
+          type="button"
+          onClick={() => {
+            handleDecline(notification.booking_id);
+            toast.dismiss(t.id);
+          }}
           className="px-3 py-1 text-xs rounded bg-red-600 text-white"
         >
           Decline
         </button>
       </div>
     </div>
-  );
+  ));
 };
+
 
  useEffect(() => {
     dispatch(fetchAdminNotifications())
@@ -97,11 +106,12 @@ export default function AdminDashboard() {
         
   }, [dispatch]);
  
-
+    console.log("AdminDashboard rendered");
   return (
      <div className="space-y-6 pt-16 md:pt-0 px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+    
+
 
    
       </div>

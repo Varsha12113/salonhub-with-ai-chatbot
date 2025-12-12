@@ -78,7 +78,7 @@ export default function Register() {
         </h2>
 
         <p className="text-center text-gray-600 mb-6">
-          Join us and start booking appointments in seconds.
+       Admin Registration
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
