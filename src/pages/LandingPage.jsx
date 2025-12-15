@@ -10,9 +10,6 @@ export default function LandingPage() {
   <HeroSection />
       <AboutSection/>
       <ReviewSection />
-      
-
-
     </div>
 
   );

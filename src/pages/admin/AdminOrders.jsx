@@ -1,60 +1,57 @@
-import React, { useState } from "react";
+import React, { useEffect  } from "react";
+import { useSelector, useDispatch } from 'react-redux';
 import { Search, Filter, Eye, Edit, Trash2 } from "lucide-react";
+import { fetchOrders, setSearch, setFilter } from '../../redux/Slice/orderSlice';
 
 export default function AdminOrders() {
-  // 🔹 Dummy salon order data
-  const [orders] = useState([
-    {
-      id: "ORD001",
-      customer: "Neha Sharma",
-      service: "Hair Spa",
-      date: "10 Nov 2025",
-      time: "11:00 AM",
-      price: 1200,
-      status: "Approved",
-    },
-    {
-      id: "ORD002",
-      customer: "Ravi Kumar",
-      service: "Facial",
-      date: "10 Nov 2025",
-      time: "02:00 PM",
-      price: 800,
-      status: "Pending",
-    },
-    {
-      id: "ORD003",
-      customer: "Priya Singh",
-      service: "Haircut",
-      date: "9 Nov 2025",
-      time: "05:00 PM",
-      price: 500,
-      status: "Completed",
-    },
-    {
-      id: "ORD004",
-      customer: "Amit Verma",
-      service: "Pedicure",
-      date: "9 Nov 2025",
-      time: "04:00 PM",
-      price: 900,
-      status: "Cancelled",
-    },
-  ]);
+ 
+const dispatch = useDispatch();
 
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("All");
+ const { 
+    filteredOrders = [],
+    stats = { total_orders: 0, completed_orders: 0, pending_orders: 0 },
+    status = 'idle',
+    error = null,
+    search = '',
+    filter = 'All'
+  } = useSelector(state => state.orders || {});
 
-  // 🔹 Filtered data
-  const filteredOrders = orders.filter((order) => {
-    const matchesSearch = order.customer
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchesStatus =
-      filter === "All" ? true : order.status === filter;
-    return matchesSearch && matchesStatus;
-  });
+  useEffect(() => {
+    if (status === 'idle' || status === 'failed') { // Only fetch when needed
+      dispatch(fetchOrders());
+    }
+  }, [dispatch, status]); // ✅ status prevents infinite loop
 
+ // 🔹 Loading state
+  if (status === 'loading') {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-500">Loading orders...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // 🔹 Error state
+  if (status === 'failed') {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col items-center justify-center h-64 text-center">
+          <div className="text-xl font-semibold text-red-600 mb-2">Failed to load orders</div>
+          <div className="text-gray-500 mb-4">{error}</div>
+          <button 
+            onClick={() => dispatch(fetchOrders())}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  
   return (
     <div className="space-y-6">
       {/* ===== Header ===== */}
@@ -62,31 +59,30 @@ export default function AdminOrders() {
         <h1 className="text-3xl font-bold text-gray-800">Orders</h1>
 
         <div className="flex flex-wrap items-center gap-3 mt-4 sm:mt-0">
-          {/* Search */}
+          {/* Search - ✅ Fixed: use 'search' from Redux */}
           <div className="flex items-center bg-white border rounded-lg px-3 py-2 shadow-sm">
             <Search size={18} className="text-gray-400 mr-2" />
             <input
               type="text"
               placeholder="Search by customer..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={search}  // ✅ Now works
+              onChange={(e) => dispatch(setSearch(e.target.value))}
               className="outline-none text-sm text-gray-600"
             />
           </div>
 
-          {/* Filter */}
-          <div className="flex items-center bg-white border rounded-lg px-3 py-2 shadow-sm">
+          {/* Filter - ✅ Fixed: use 'filter' from Redux */}
+         <div className="flex items-center bg-white border rounded-lg px-3 py-2 shadow-sm">
             <Filter size={18} className="text-gray-400 mr-2" />
             <select
               value={filter}
-              onChange={(e) => setFilter(e.target.value)}
+              onChange={(e) => dispatch(setFilter(e.target.value))}
               className="outline-none text-sm text-gray-600 bg-transparent"
             >
               <option>All</option>
               <option>Pending</option>
-              <option>Approved</option>
-              <option>Completed</option>
-              <option>Cancelled</option>
+              <option>Confirmed</option>
+              <option>Rejected</option>
             </select>
           </div>
         </div>
@@ -120,16 +116,12 @@ export default function AdminOrders() {
                   key={order.id}
                   className="border-b hover:bg-gray-50 transition"
                 >
-                  <td className="px-4 py-3 font-medium text-gray-800">
-                    {order.id}
-                  </td>
+                  <td className="px-4 py-3 font-medium text-gray-800">{order.id}</td>
                   <td className="px-4 py-3">{order.customer}</td>
                   <td className="px-4 py-3">{order.service}</td>
                   <td className="px-4 py-3">{order.date}</td>
                   <td className="px-4 py-3">{order.time}</td>
-                  <td className="px-4 py-3 font-semibold text-gray-700">
-                    ₹{order.price}
-                  </td>
+                  <td className="px-4 py-3 font-semibold text-gray-700">₹{order.price}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -147,21 +139,9 @@ export default function AdminOrders() {
                   </td>
                   <td className="px-4 py-3 text-center">
                     <div className="flex items-center justify-center gap-3 text-gray-500">
-                      <Eye
-                        size={18}
-                        className="cursor-pointer hover:text-pink-600"
-                        title="View Details"
-                      />
-                      <Edit
-                        size={18}
-                        className="cursor-pointer hover:text-yellow-600"
-                        title="Edit Order"
-                      />
-                      <Trash2
-                        size={18}
-                        className="cursor-pointer hover:text-red-600"
-                        title="Delete Order"
-                      />
+                      <Eye size={18} className="cursor-pointer hover:text-pink-600" title="View Details" />
+                      <Edit size={18} className="cursor-pointer hover:text-yellow-600" title="Edit Order" />
+                      <Trash2 size={18} className="cursor-pointer hover:text-red-600" title="Delete Order" />
                     </div>
                   </td>
                 </tr>
@@ -171,29 +151,28 @@ export default function AdminOrders() {
         </table>
       </div>
 
-      {/* ===== Summary Section ===== */}
+      {/* ===== Summary Section - ✅ Fixed: use stats from Redux */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-2xl shadow-md p-5">
           <h3 className="text-gray-500 text-sm font-medium">Total Orders</h3>
           <p className="text-2xl font-bold text-gray-800 mt-1">
-            {orders.length}
+            {stats.total_orders}  {/* ✅ Uses API stats */}
           </p>
         </div>
         <div className="bg-white rounded-2xl shadow-md p-5">
-          <h3 className="text-gray-500 text-sm font-medium">
-            Completed Orders
-          </h3>
+          <h3 className="text-gray-500 text-sm font-medium">Completed Orders</h3>
           <p className="text-2xl font-bold text-blue-600 mt-1">
-            {orders.filter((o) => o.status === "Completed").length}
+            {stats.completed_orders}  {/* ✅ Uses API stats */}
           </p>
         </div>
         <div className="bg-white rounded-2xl shadow-md p-5">
           <h3 className="text-gray-500 text-sm font-medium">Pending Orders</h3>
           <p className="text-2xl font-bold text-yellow-600 mt-1">
-            {orders.filter((o) => o.status === "Pending").length}
+            {stats.pending_orders}  {/* ✅ Uses API stats */}
           </p>
         </div>
       </div>
     </div>
   );
+  
 }

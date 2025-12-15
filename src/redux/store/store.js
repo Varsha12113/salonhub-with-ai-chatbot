@@ -6,7 +6,7 @@ import genderReducer from "../Slice/genderSlice";
 import schedulerReducer from "../Slice/schedulerSlice";
 import userServiceReducer from "../Slice/userSlice";
 import adminNotificationsReducer from "../Slice/adminNotificationsSlice";
-  
+import orderReducer from "../Slice/orderSlice";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -16,6 +16,6 @@ export const store = configureStore({
     userServices: userServiceReducer,
     checkout: checkoutReducer,
     adminNotifications: adminNotificationsReducer,
-    
+    orders: orderReducer
   },
 });

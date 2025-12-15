@@ -14,7 +14,6 @@ import Contact from "./pages/Contact.jsx";
 import Services from "./pages/Services.jsx";
 import Booking from "./pages/Booking/Booking.jsx";
 import Cart from "./pages/Cart";
-import Payment from "./pages/Payment.jsx";
 import Dashboard from "./pages/Dashboard";
 import UserRegister from "./pages/Registration";
 import Register from "./pages/admin/AdminRegister.jsx";
@@ -69,7 +68,7 @@ export default function App() {
           ============================= */}
           <Route element={<ProtectedRoute allowedRoles={["user", "admin"]} />}>
             <Route path="/cart" element={<Cart />} />
-            <Route path="/payment" element={<Payment />} />
+           
             <Route path="/dashboard" element={<Dashboard />} />
           </Route>
 

@@ -15,7 +15,6 @@ const Home = () => {
           <p className="mt-4 text-lg md:text-xl opacity-90">
             Book beauty & grooming services from top stylists
           </p>
-
           {/* ▶ CTA Buttons */}
           <div className="mt-8 flex justify-center gap-4">
             <Link
@@ -33,7 +32,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
       {/* 🔍 Search Section */}
       <div className="max-w-4xl mx-auto mt-[-30px] shadow-lg bg-white p-5 rounded-2xl flex items-center gap-3">
         <FaSearch className="text-gray-500 text-xl" />
@@ -46,15 +44,12 @@ const Home = () => {
           Search
         </button>
       </div>
-
       {/* 👩‍🦰👨 Category Section */}
       <section className="max-w-7xl mx-auto py-16 px-6">
         <h2 className="text-3xl font-bold text-gray-800 text-center mb-10">
           Choose Your Category
         </h2>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
           {/* Female */}
           <Link
             to="/services/female"
@@ -70,7 +65,6 @@ const Home = () => {
               <h3 className="text-white text-2xl font-semibold mt-2">Female Services</h3>
             </div>
           </Link>
-
           {/* Male */}
           <Link
             to="/services/male"
@@ -88,7 +82,6 @@ const Home = () => {
           </Link>
         </div>
       </section>
-
       {/* ⭐ Popular Services */}
       <section className="bg-gray-50 py-16 px-6">
         <h2 className="text-3xl font-bold text-gray-800 text-center mb-10">
@@ -96,7 +89,6 @@ const Home = () => {
         </h2>
 
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-
           <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
             <FaCut className="text-purple-500 text-3xl mb-3" />
             <h4 className="font-semibold text-lg">Hair Cut & Styling</h4>
@@ -104,7 +96,6 @@ const Home = () => {
               Professional haircut styles for all looks.
             </p>
           </div>
-
           <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
             <FaSpa className="text-purple-500 text-3xl mb-3" />
             <h4 className="font-semibold text-lg">Facial & Cleanup</h4>
@@ -112,7 +103,6 @@ const Home = () => {
               Glow-boosting facial services.
             </p>
           </div>
-
           <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
             <FaMale className="text-blue-500 text-3xl mb-3" />
             <h4 className="font-semibold text-lg">Men Grooming</h4>
@@ -129,7 +119,6 @@ const Home = () => {
         <p className="mt-3 text-lg opacity-90">
           Book your favorite salon services with GlowupSalon
         </p>
-
         <Link
           to="/login"
           className="mt-6 inline-block bg-white text-purple-600 px-6 py-3 rounded-xl font-semibold shadow hover:bg-purple-100"
@@ -137,7 +126,6 @@ const Home = () => {
           Book Now
         </Link>
       </section>
-
     </div>
   );
 };

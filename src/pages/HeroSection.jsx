@@ -11,11 +11,7 @@ const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    
-
     <section id="hero" className="relative">
-
-
       {/* ---------- HERO BACKGROUND ---------- */}
       <div className="bg-gradient-to-r from-purple-100 via-purple-200 to-purple-300 min-h-[90vh] flex items-center">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10 px-6 py-28">
@@ -56,15 +52,12 @@ const HeroSection = () => {
               </button>
             </div>
           </div>
-
           {/* ---------- RIGHT IMAGE ---------- */}
           <div className="w-full md:w-1/2 flex justify-center">
           <Clock/>
-
           </div>
         </div>
       </div>
-
       {/* ---------- FLOATING ICON ---------- */}
       <div className="absolute bottom-6 right-6 bg-white p-3 rounded-full shadow-lg animate-float">
         <Sparkles size={24} className="text-purple-600" />
