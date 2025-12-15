@@ -1,63 +1,59 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux';
 import { Search, Filter, Eye, Edit, Trash2, Star } from "lucide-react";
+import { fetchCustomers, setSearch, setFilter } from '../../redux/Slice/customerSlice';
 
 export default function Customers() {
-  // 🔹 Dummy salon customer data
-  const [customers] = useState([
-    {
-      id: "CUS001",
-      name: "Neha Sharma",
-      email: "neha.sharma@gmail.com",
-      phone: "+91 9876543210",
-      totalBookings: 12,
-      lastVisit: "9 Nov 2025",
-      loyalty: "Gold",
-    },
-    {
-      id: "CUS002",
-      name: "Ravi Kumar",
-      email: "ravi.kumar@gmail.com",
-      phone: "+91 9988776655",
-      totalBookings: 5,
-      lastVisit: "8 Nov 2025",
-      loyalty: "Silver",
-    },
-    {
-      id: "CUS003",
-      name: "Priya Singh",
-      email: "priya.singh@gmail.com",
-      phone: "+91 9900112233",
-      totalBookings: 2,
-      lastVisit: "5 Nov 2025",
-      loyalty: "Bronze",
-    },
-    {
-      id: "CUS004",
-      name: "Amit Verma",
-      email: "amit.verma@gmail.com",
-      phone: "+91 9123456789",
-      totalBookings: 8,
-      lastVisit: "6 Nov 2025",
-      loyalty: "Silver",
-    },
-  ]);
+  const dispatch = useDispatch();
 
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("All");
+  // ✅ SAFE destructuring
+  const {
+    filteredCustomers = [],
+    summary = { total_customers: 0, gold_members: 0, silver_members: 0 },
+    status = 'idle',
+    error = null,
+    search = '',
+    filter = 'All'
+  } = useSelector(state => state.customers || {});
 
-  // 🔹 Filter customers by search or loyalty
-  const filteredCustomers = customers.filter((customer) => {
-    const matchesSearch =
-      customer.name.toLowerCase().includes(search.toLowerCase()) ||
-      customer.email.toLowerCase().includes(search.toLowerCase());
-    const matchesLoyalty =
-      filter === "All" ? true : customer.loyalty === filter;
-    return matchesSearch && matchesLoyalty;
-  });
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchCustomers());
+    }
+  }, [dispatch, status]);
+
+  // Loading
+  if (status === 'loading') {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-500">Loading customers...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error
+  if (status === 'failed') {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col items-center justify-center h-64 text-center">
+          <div className="text-xl font-semibold text-red-600 mb-2">Failed to load customers</div>
+          <div className="text-gray-500 mb-4">{error}</div>
+          <button 
+            onClick={() => dispatch(fetchCustomers())}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* ===== Header ===== */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-800">Customers</h1>
 
@@ -69,7 +65,7 @@ export default function Customers() {
               type="text"
               placeholder="Search by name or email..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => dispatch(setSearch(e.target.value))}
               className="outline-none text-sm text-gray-600"
             />
           </div>
@@ -79,7 +75,7 @@ export default function Customers() {
             <Filter size={18} className="text-gray-400 mr-2" />
             <select
               value={filter}
-              onChange={(e) => setFilter(e.target.value)}
+              onChange={(e) => dispatch(setFilter(e.target.value))}
               className="outline-none text-sm text-gray-600 bg-transparent"
             >
               <option>All</option>
@@ -91,7 +87,7 @@ export default function Customers() {
         </div>
       </div>
 
-      {/* ===== Customers Table ===== */}
+      {/* Table */}
       <div className="bg-white p-5 rounded-2xl shadow-md overflow-x-auto">
         <table className="w-full text-sm text-left text-gray-600">
           <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
@@ -115,19 +111,12 @@ export default function Customers() {
               </tr>
             ) : (
               filteredCustomers.map((customer) => (
-                <tr
-                  key={customer.id}
-                  className="border-b hover:bg-gray-50 transition"
-                >
-                  <td className="px-4 py-3 font-medium text-gray-800">
-                    {customer.id}
-                  </td>
+                <tr key={customer.id} className="border-b hover:bg-gray-50 transition">
+                  <td className="px-4 py-3 font-medium text-gray-800">{customer.id}</td>
                   <td className="px-4 py-3">{customer.name}</td>
                   <td className="px-4 py-3">{customer.email}</td>
                   <td className="px-4 py-3">{customer.phone}</td>
-                  <td className="px-4 py-3 text-center font-semibold">
-                    {customer.totalBookings}
-                  </td>
+                  <td className="px-4 py-3 text-center font-semibold">{customer.totalBookings}</td>
                   <td className="px-4 py-3">{customer.lastVisit}</td>
                   <td className="px-4 py-3">
                     <span
@@ -145,21 +134,9 @@ export default function Customers() {
                   </td>
                   <td className="px-4 py-3 text-center">
                     <div className="flex items-center justify-center gap-3 text-gray-500">
-                      <Eye
-                        size={18}
-                        className="cursor-pointer hover:text-purple-600"
-                        title="View Profile"
-                      />
-                      <Edit
-                        size={18}
-                        className="cursor-pointer hover:text-yellow-600"
-                        title="Edit Customer"
-                      />
-                      <Trash2
-                        size={18}
-                        className="cursor-pointer hover:text-red-600"
-                        title="Delete Customer"
-                      />
+                      <Eye size={18} className="cursor-pointer hover:text-purple-600" title="View Profile" />
+                      <Edit size={18} className="cursor-pointer hover:text-yellow-600" title="Edit Customer" />
+                      <Trash2 size={18} className="cursor-pointer hover:text-red-600" title="Delete Customer" />
                     </div>
                   </td>
                 </tr>
@@ -169,25 +146,19 @@ export default function Customers() {
         </table>
       </div>
 
-      {/* ===== Summary Cards ===== */}
+      {/* Summary - Uses REAL API data */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-2xl shadow-md p-5">
           <h3 className="text-gray-500 text-sm font-medium">Total Customers</h3>
-          <p className="text-2xl font-bold text-gray-800 mt-1">
-            {customers.length}
-          </p>
+          <p className="text-2xl font-bold text-gray-800 mt-1">{summary.total_customers}</p>
         </div>
         <div className="bg-white rounded-2xl shadow-md p-5">
           <h3 className="text-gray-500 text-sm font-medium">Gold Members</h3>
-          <p className="text-2xl font-bold text-yellow-600 mt-1">
-            {customers.filter((c) => c.loyalty === "Gold").length}
-          </p>
+          <p className="text-2xl font-bold text-yellow-600 mt-1">{summary.gold_members}</p>
         </div>
         <div className="bg-white rounded-2xl shadow-md p-5">
           <h3 className="text-gray-500 text-sm font-medium">Silver Members</h3>
-          <p className="text-2xl font-bold text-gray-600 mt-1">
-            {customers.filter((c) => c.loyalty === "Silver").length}
-          </p>
+          <p className="text-2xl font-bold text-gray-600 mt-1">{summary.silver_members}</p>
         </div>
       </div>
     </div>
