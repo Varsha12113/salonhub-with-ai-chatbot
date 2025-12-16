@@ -139,18 +139,45 @@ export const updateChildService = createAsyncThunk(
   }
 );
 
-// 8️⃣ Delete a child service
+// // 8️⃣ Delete a child service
+// export const deleteChildService = createAsyncThunk(
+//   "services/deleteChildService",
+//   async ({ mainId, childId }, { rejectWithValue }) => {
+//     try {
+//       await api.delete(`/api/services/admin/main/${mainId}/child/${childId}/`);
+//       return { mainId, childId };
+//     } catch (err) {
+//       // 🔴 IMPORTANT: return a serializable error payload
+//       const payload =
+//         err?.response?.data ||
+//         err?.message ||
+//         "Failed to delete child service";
+//       return rejectWithValue(payload);
+//     }
+//   }
+// );
+
 export const deleteChildService = createAsyncThunk(
   "services/deleteChildService",
   async ({ mainId, childId }, { rejectWithValue }) => {
     try {
-      await api.delete(`/api/services/admin/main/${mainId}/child/${childId}/`);
+      const res = await api.delete(
+        `/api/services/admin/main/${mainId}/child/${childId}/`
+      );
+      console.log("DELETE OK:", res);
       return { mainId, childId };
     } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
+      console.log("DELETE ERROR raw:", err.response?.status, err.response?.data);
+      const payload =
+        err?.response?.data ||
+        err?.message ||
+        "Failed to delete child service";
+      return rejectWithValue(payload);
     }
   }
 );
+
+
 
 // =================================================
 // SLICE

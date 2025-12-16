@@ -22,10 +22,10 @@ export default function AdminServices() {
 
   // Main service form state
   const [mainForm, setMainForm] = useState({
-    main_services_name: "",
-    main_services_description: "",
-    gender: "",
-  });
+  main_services_name: "",
+  main_services_description: "",
+  gender: "",
+});
   const [isEditingMain, setIsEditingMain] = useState(false);
   const [editingMainId, setEditingMainId] = useState(null);
 
@@ -35,7 +35,7 @@ export default function AdminServices() {
     child_service_description: "",
     price: "",
     duration: "",
-    image: null,
+    image: null,    
   });
   const [isEditingChild, setIsEditingChild] = useState(false);
   const [editingChildId, setEditingChildId] = useState(null);
@@ -156,27 +156,37 @@ export default function AdminServices() {
   }
 
   // Initialize edit for child service
-  function startEditChild(childService) {
-    setIsEditingChild(true);
-    setEditingChildId(childService.id);
-    setChildForm({
-      child_service_name: childService.child_service_name,
-      child_service_description: childService.child_service_description,
-      price: childService.price,
-      duration: childService.duration || "",
-      image: null, // Reset image, only upload if user selects new
-    });
-    setSelectedMainId(childService.main_service);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+function startEditChild(childService) {
+  setIsEditingChild(true);
+  setEditingChildId(childService.id);
+  setChildForm({
+    child_service_name: childService.child_service_name,
+    child_service_description: childService.child_service_description,
+    price: childService.price,
+    duration: childService.duration || "",
+    image: null,
+  });
+  setSelectedMainId(childService.main_service); // ✅ use main_service (matches serializer)
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 
   // Remove child service
-  async function removeChild(childId) {
-    if (window.confirm("Delete this child service?")) {
-      await dispatch(deleteChildService({ mainId: selectedMainId, childId })).unwrap();
-      dispatch(fetchChildServices(selectedMainId));
-    }
+ async function removeChild(childId) {
+  if (!window.confirm("Delete this child service?")) return;
+
+  try {
+    await dispatch(deleteChildService({ mainId: selectedMainId, childId })).unwrap();
+    dispatch(fetchChildServices(selectedMainId));
+  } catch (err) {
+    console.error("Delete child error:", err);
+    const msg =
+      typeof err === "string"
+        ? err
+        : err?.detail || err?.error || JSON.stringify(err);
+    alert("Failed to delete child service: " + msg);
   }
+}
 
   const childrenList = child[selectedMainId] || [];
 
@@ -454,7 +464,7 @@ export default function AdminServices() {
                         <td className="px-4 py-2">
                           {c.image && (
                             <img
-                              src={c.image.startsWith("http") ? c.image : `http://127.0.0.1:8000${c.image}`}
+                              src={c.image}
                               alt="service"
                               width="60"
                               height="60"
