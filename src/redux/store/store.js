@@ -9,6 +9,7 @@ import adminNotificationsReducer from "../Slice/adminNotificationsSlice";
 import orderReducer from "../Slice/orderSlice";
 import customerReducer from "../Slice/customerSlice";
 import dashboardReducer from "../Slice/DashboardSlice";
+import analyticsReducer from "../Slice/AnalyticsSlice";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -22,5 +23,6 @@ export const store = configureStore({
     customers: customerReducer, 
     adminNotifications: adminNotificationsReducer,
     dashboard: dashboardReducer,
+     analytics: analyticsReducer,
   },
 });

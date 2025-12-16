@@ -112,7 +112,7 @@ const authSlice = createSlice({
       state.role = null;
       state.loading = false;
       state.error = null;
-
+  Object.assign(state, initialState);
       removeFromStorage("user");
       removeFromStorage("token");
       removeFromStorage("refreshToken");
