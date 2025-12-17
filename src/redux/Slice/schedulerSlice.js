@@ -1,7 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../config/httphandler"; 
-// axios instance
-
 
 // ======================================================================
 // 📌 SLOT MASTER — CREATE (POST)

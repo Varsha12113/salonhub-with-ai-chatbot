@@ -80,11 +80,7 @@ console.log("serviceData from API:", serviceData);
           <p className="text-green-500 text-xs mt-1">▲ +10% this month</p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl shadow-md">
-          <p className="text-sm text-gray-500">Products Sold</p>
-          <h3 className="text-2xl font-bold mt-1 text-yellow-600">580</h3>
-          <p className="text-red-500 text-xs mt-1">▼ -5% this week</p>
-        </div>
+        
       </div>
 
       {/* Charts Section */}
