@@ -138,7 +138,7 @@ export default function AdminServices() {
       child_service_description: childForm.child_service_description.trim(),
       price: childForm.price,
       duration: childForm.duration,
-      image: childForm.image,
+      ...(childForm.image && { image: childForm.image }),
     };
     try {
       if (isEditingChild) {

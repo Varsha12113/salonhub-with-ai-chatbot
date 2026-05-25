@@ -1,5 +1,5 @@
 import axios from "axios";
-import { axiosConfig } from "./config";
+import { axiosConfig } from "../config/config";
 
 // --------------------------------------------------
 // 🔹 Create Axios instance

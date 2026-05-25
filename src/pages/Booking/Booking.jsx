@@ -14,9 +14,11 @@ import { checkoutBooking, resetCheckout } from "../../redux/Slice/bookingSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { clearCart } from "../../utils/cart";
+import { startRazorpayPayment } from "../../redux/Slice/bookingSlice";
 
 
 export default function Booking() {
+  
   const { bookingData } = useSelector((state) => state.checkout);
   const navigate = useNavigate();
   const location = useLocation();
@@ -58,7 +60,12 @@ export default function Booking() {
 };
 
 
-
+  const dispatch = useDispatch();
+  
+  // ── Add this — reset payment state on every fresh booking ──
+  useEffect(() => {
+    dispatch(resetCheckout());
+  }, [dispatch]);
 
 
   const handleSubmit = () => {
@@ -487,10 +494,25 @@ console.log({
 }
 
 
-
-
 function Step5Confirm({ bookingData, formData, onConfirm }) {
-  const navigate = useNavigate();
+  const dispatch   = useDispatch();
+  const navigate   = useNavigate();
+
+  const { paymentLoading, paymentData, error } = useSelector(
+    (state) => state.checkout
+  );
+
+useEffect(() => {
+    if (
+      paymentData &&
+      bookingData &&
+      paymentData.booking_id === bookingData.booking_id  // ← match booking IDs
+    ) {
+      navigate("/booking-success", {
+        state: { booking: bookingData, payment: paymentData },
+      });
+    }
+  }, [paymentData, navigate, bookingData]);
 
   if (!bookingData) {
     return (
@@ -502,62 +524,73 @@ function Step5Confirm({ bookingData, formData, onConfirm }) {
     );
   }
 
-  const summary = {
-    name: formData.username || bookingData.username,
-    email: formData.email || bookingData.email,
-    location: bookingData.location || "Your Salon Name",
-    services: bookingData.services || [],
-    date: bookingData.date,
-    timeSlot: bookingData.time,
-    stylist: bookingData.stylist || "NO PREFERENCE",
-  };
-
-  const handleConfirm = () => {
-    onConfirm(summary); // Call parent's onConfirm if needed
-    navigate('/booking-success'); // No state needed!
+  const handlePay = () => {
+    dispatch(startRazorpayPayment(bookingData.booking_id));
   };
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow">
       <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
-        Book Your Appointment
+        Confirm & Pay
       </h2>
 
       <div className="border-t border-b py-8 mt-4">
         <p className="mb-4 text-gray-800">
-          Hi <span className="font-semibold">{summary.name}</span>,
+          Hi <span className="font-semibold">
+            {formData.username || bookingData.username}
+          </span>,
         </p>
         <p className="mb-6 text-gray-700">
           Please see below the summary of your appointment:
         </p>
 
-        <div className="space-y-1 text-sm md:text-base text-gray-800">
-          <p>
-            <span className="font-semibold">Location :</span> {summary.location}
-          </p>
+        <div className="space-y-1 text-sm md:text-base text-gray-800 mb-6">
           <p>
             <span className="font-semibold">Service(s) :</span>{" "}
-            {summary.services.join(", ")}
+            {bookingData.services?.join(", ")}
           </p>
           <p>
-            <span className="font-semibold">Date :</span> {summary.date}
+            <span className="font-semibold">Date :</span> {bookingData.date}
           </p>
           <p>
-            <span className="font-semibold">Time Slot :</span>{" "}
-            {summary.timeSlot}
+            <span className="font-semibold">Time :</span> {bookingData.time}
           </p>
-          <p>
-            <span className="font-semibold">Preferred Stylist :</span>{" "}
-            {summary.stylist}
-          </p>
+          {/* ── Price summary ── */}
+          <div className="mt-4 p-4 bg-purple-50 rounded-lg">
+            <div className="flex justify-between text-sm">
+              <span>Subtotal</span>
+              <span>₹{bookingData.total_price}</span>
+            </div>
+            <div className="flex justify-between text-sm mt-1">
+              <span>GST (18%)</span>
+              <span>
+                ₹{(bookingData.total_price * 0.18).toFixed(2)}
+              </span>
+            </div>
+            <div className="flex justify-between font-bold text-base mt-2 border-t pt-2">
+              <span>Total</span>
+              <span>₹{bookingData.total_price}</span>
+            </div>
+          </div>
         </div>
 
+        {/* Error message */}
+        {error && (
+          <p className="text-red-500 text-sm mb-4">{error}</p>
+        )}
+
+        {/* Pay button */}
         <button
-          onClick={handleConfirm}
-          className="mt-8 w-full rounded-lg bg-purple-600 py-3 text-white font-semibold tracking-wide hover:bg-purple-700 transition"
+          onClick={handlePay}
+          disabled={paymentLoading}
+          className="mt-4 w-full rounded-lg bg-purple-600 py-3 text-white font-semibold tracking-wide hover:bg-purple-700 transition disabled:opacity-60"
         >
-          CONFIRM
+          {paymentLoading ? "Opening payment..." : `Pay ₹${bookingData.total_price}`}
         </button>
+
+        <p className="text-center text-xs text-gray-400 mt-3">
+          Secured by Razorpay
+        </p>
       </div>
     </div>
   );

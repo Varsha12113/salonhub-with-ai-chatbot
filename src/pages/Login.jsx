@@ -29,14 +29,12 @@ const handleSubmit = async (e) => {
     const role = result.payload.user.role;
 
     if (role === "admin") {
-      navigate("/admin/dashboard",{ replace: true });
-    } else  {
-      navigate("/",{ replace: true });
-    } 
+      navigate("/admin", { replace: true });
+    } else {
+      navigate("/dashboard", { replace: true });
+    }
   }
 };
-
-
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen">

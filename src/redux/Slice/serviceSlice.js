@@ -115,7 +115,7 @@ export const createChildService = createAsyncThunk(
   }
 );
 
-// 7️⃣ Update a child service
+//7️⃣ Update a child service
 export const updateChildService = createAsyncThunk(
   "services/updateChildService",
   async ({ mainId, childId, data }, { rejectWithValue }) => {
@@ -126,6 +126,8 @@ export const updateChildService = createAsyncThunk(
           formData.append(key, value);
         }
       });
+
+
 
       const res = await api.put(
         `/api/services/admin/main/${mainId}/child/${childId}/`,

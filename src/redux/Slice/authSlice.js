@@ -112,7 +112,7 @@ const authSlice = createSlice({
       state.role = null;
       state.loading = false;
       state.error = null;
-  Object.assign(state, initialState);
+
       removeFromStorage("user");
       removeFromStorage("token");
       removeFromStorage("refreshToken");
@@ -126,19 +126,24 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
-    state.loading = false;
-    state.user = action.payload.user;
-    state.token = action.payload.access;
+    .addCase(loginUser.fulfilled, (state, action) => {
+  state.loading = false;
+  state.error   = null;
 
-   // backend already gives "admin" or "user"
-  const roleName = action.payload.user.role;      // <-- use directly
-  state.role = roleName;
+  // ← explicitly clear old user first
+  state.user  = null;
+  state.token = null;
+  state.role  = null;
 
-    saveToStorage("user", action.payload.user);
-    saveToStorage("token", action.payload.access);
-    saveToStorage("refreshToken", action.payload.refresh);
-    saveToStorage("role", roleName);   // 🔥 store string instead of number
+  // then set new user
+  state.user  = action.payload.user;
+  state.token = action.payload.access;
+  state.role  = action.payload.user.role;
+
+  saveToStorage("user",         action.payload.user);
+  saveToStorage("token",        action.payload.access);
+  saveToStorage("refreshToken", action.payload.refresh);
+  saveToStorage("role",         action.payload.user.role);
 })
 
       .addCase(loginUser.rejected, (state, action) => {
