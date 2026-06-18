@@ -91,7 +91,11 @@ export default function AdminServices() {
       setIsEditingMain(false);
       setEditingMainId(null);
     } catch (err) {
-      alert("Failed to save main service: " + JSON.stringify(err));
+      const msg =
+        typeof err === "string"
+          ? err
+          : err?.error || err?.detail || err?.message || JSON.stringify(err);
+      alert("Failed to save main service: " + msg);
     }
   }
 
@@ -109,12 +113,19 @@ export default function AdminServices() {
 
   // Remove main service
   async function removeMain(id) {
-    if (window.confirm("Are you sure you want to delete this main service?")) {
+    if (!window.confirm("Are you sure you want to delete this main service?")) return;
+    try {
       await dispatch(deleteMainService(id)).unwrap();
       dispatch(fetchMainServices());
       if (selectedMainId === id) setSelectedMainId("");
+    } catch (err) {
+      const msg =
+        typeof err === "string"
+          ? err
+          : err?.error || err?.detail || err?.message || JSON.stringify(err);
+      alert("Failed to delete main service: " + msg);
     }
-  }
+}
 
   // Handle changes in child service form inputs (including file)
   const onChildChange = (e) => {
@@ -151,8 +162,12 @@ export default function AdminServices() {
       setIsEditingChild(false);
       setEditingChildId(null);
     } catch (err) {
-      alert("Failed to save child service: " + JSON.stringify(err));
-    }
+  const msg =
+    typeof err === "string"
+      ? err
+      : err?.error || err?.detail || err?.message || JSON.stringify(err);
+  alert("Failed to save child service: " + msg);
+}
   }
 
   // Initialize edit for child service

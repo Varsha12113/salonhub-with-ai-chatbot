@@ -3,10 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../redux/Slice/authSlice";
 import { useNavigate } from "react-router-dom";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { useLocation } from "react-router-dom";
 
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();  
   const { loading, error } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
@@ -27,6 +29,12 @@ const handleSubmit = async (e) => {
 
   if (result.meta.requestStatus === "fulfilled") {
     const role = result.payload.user.role;
+
+    // ── Resume an interrupted booking flow, if that's why we're here ──
+    if (location.state?.resumeBooking) {
+      navigate("/booking", { state: { ...location.state }, replace: true });
+      return;
+    }
 
     if (role === "admin") {
       navigate("/admin", { replace: true });

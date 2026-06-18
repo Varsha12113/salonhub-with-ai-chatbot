@@ -493,10 +493,9 @@ function DailySlotsSection() {
   const dispatch = useDispatch();
 
   // provide safe defaults so `.length` and `.map` are always valid
-  const { availableDates = [], dailySlots = [], selectedDate, loading } = useSelector(
+const { availableDates = [], slotsByDate = [], selectedDate, loading } = useSelector(
     (state) => state.scheduler
-  );
-
+);
   const [activeDate, setActiveDate] = useState(null);
 
   // Load available dates on page load
@@ -511,7 +510,7 @@ function DailySlotsSection() {
       setActiveDate(selectedDate || availableDates[0]);
       // optionally fetch slots for that date
       const dateToLoad = selectedDate || availableDates[0];
-      if (dateToLoad) dispatch(fetchSlotsByDate(dateToLoad));
+      if (dateToLoad) dispatch(fetchSlotsByDate({ date: dateToLoad, isAdmin: true }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availableDates, selectedDate, dispatch]);
@@ -520,7 +519,7 @@ function DailySlotsSection() {
   const handleDateClick = (date) => {
     if (!date) return;
     setActiveDate(date);
-    dispatch(fetchSlotsByDate(date));
+    dispatch(fetchSlotsByDate({ date, isAdmin: true }));
   };
 
   // ⏮ Previous date
@@ -632,9 +631,9 @@ function DailySlotsSection() {
             {selectedDate ? `Slots for ${selectedDate}` : "Select a date to view slots"}
           </h2>
 
-          {Array.isArray(dailySlots) && dailySlots.length > 0 && (
-            <p className="text-sm text-gray-600">{dailySlots.length} slots</p>
-          )}
+          {Array.isArray(slotsByDate) && slotsByDate.length > 0 && (
+          <p className="text-sm text-gray-600">{slotsByDate.length} slots</p>
+        )}
         </div>
 
         <p className="text-gray-500 text-sm">
@@ -648,7 +647,7 @@ function DailySlotsSection() {
 
         {/* SLOT GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-          {(dailySlots || []).map((slot) => (
+          {(slotsByDate  || []).map((slot) => (
             <div
               key={slot.id}
               className={`p-4 rounded-xl border shadow-sm relative
@@ -690,7 +689,7 @@ function DailySlotsSection() {
         </div>
 
         {/* EMPTY STATE */}
-        {!loading && selectedDate && (dailySlots || []).length === 0 && (
+        {!loading && selectedDate && (slotsByDate  || []).length === 0 && (
           <p className="text-gray-500 mt-4">No slots available for this date.</p>
         )}
       </div>

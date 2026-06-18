@@ -146,17 +146,19 @@ export const fetchAvailableDates = createAsyncThunk(
 
 export const fetchSlotsByDate = createAsyncThunk(
   "dailySlots/fetchSlotsByDate",
-  async (date, { rejectWithValue }) => {
+  async ({ date, isAdmin = false }, { rejectWithValue }) => {
     try {
-      const res = await api.get("/api/scheduler/slots/", { params: { date } });
-      const slots = res.data?.results ?? []; // ✅ always array
+      const url = isAdmin
+        ? "/api/scheduler/admin/slots/"
+        : "/api/scheduler/slots/";
+      const res = await api.get(url, { params: { date } });
+      const slots = Array.isArray(res.data) ? res.data : res.data?.results ?? [];
       return { date, slots };
     } catch (err) {
       return rejectWithValue(err.response?.data || "Failed to load slots");
     }
   }
 );
-
 
 
 

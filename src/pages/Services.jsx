@@ -44,6 +44,7 @@ export default function Services() {
 
   return(
      <div
+      id="services" 
       className="relative min-h-screen bg-cover bg-center bg-fixed text-gray-800 py-12 px-4"
       style={{
         backgroundImage:

@@ -53,19 +53,12 @@ const HeroSection = () => {
             </div>
           </div>
           {/* ---------- RIGHT IMAGE ---------- */}
-          <div className="w-full md:w-1/2 flex justify-center">
-          <Clock/>
-          </div>
+          <div className="pr-96 -mt-30">   {/* tailwind: padding-right 384px */}
+          <Clock />
+        </div>
         </div>
       </div>
-      {/* ---------- FLOATING ICON ---------- */}
-      <div className="absolute bottom-6 right-6 bg-white p-3 rounded-full shadow-lg animate-float">
-        <Sparkles size={24} className="text-purple-600" />
-      </div>
-
-      <div className="absolute top-8 left-10 bg-white p-3 rounded-full shadow-lg animate-float-slow">
-        <Sparkles size={22} className="text-purple-500" />
-      </div>
+      
     </section>
   );
 };

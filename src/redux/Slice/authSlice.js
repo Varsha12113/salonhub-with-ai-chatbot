@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { httpPost } from "../../config/httphandler";
+import { httpPost ,httpGet} from "../../config/httphandler";
 import { saveToStorage, getFromStorage, removeFromStorage } from "../store/storage";
 
 // ---------------------------------------------------------
@@ -78,6 +78,26 @@ export const registerUser = createAsyncThunk(
     } catch (err) {
       console.error("Registration error:", err);
       return rejectWithValue(err.detail || "Registration failed");
+    }
+  }
+);
+
+// ---------------------------------------------------------
+// 🔹 VERIFY TOKEN ON APP LOAD
+// ---------------------------------------------------------
+export const verifyAuth = createAsyncThunk(
+  "auth/verifyAuth",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = getFromStorage("token");
+      if (!token) {
+        return rejectWithValue("No token");
+      }
+      // Hit a /me or /verify endpoint that requires a valid access token
+      const data = await httpGet("/api/auth/me/");
+      return data; // should return { user: {...} }
+    } catch (err) {
+      return rejectWithValue(err.detail || "Invalid session");
     }
   }
 );

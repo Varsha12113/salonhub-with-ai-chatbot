@@ -14,7 +14,7 @@ import Contact from "./pages/Contact.jsx";
 import Services from "./pages/Services.jsx";
 import Booking from "./pages/Booking/Booking.jsx";
 import Cart from "./pages/Cart";
-import Dashboard from "./pages/Dashboard";
+// import Dashboard from "./pages/Dashboard";
 import UserRegister from "./pages/Registration";
 import Register from "./pages/admin/AdminRegister.jsx";
 import UserMainServices from "./components/services/UserMainServices.jsx";
@@ -34,6 +34,10 @@ import Scheduler from "./pages/admin/scheduler.jsx";
 import UserPanel from "./pages/User/UserPanel.jsx";
 import { Import } from "lucide-react";
 
+// Chat Widget  👈 new import
+import ChatWidget from "./components/ChatWidget";
+
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -45,6 +49,7 @@ export default function App() {
         <Route path="/register" element={<Registration />} />
         {/* ✅ Fixed: admin/register must be absolute */}
         <Route path="/admin/register" element={<Register />} />
+       
 
         {/* =============================
             Main layout wrapper
@@ -69,7 +74,7 @@ export default function App() {
           <Route element={<ProtectedRoute allowedRoles={["user", "admin"]} />}>
             <Route path="/cart" element={<Cart />} />
            
-            <Route path="/dashboard" element={<Dashboard />} />
+            {/* <Route path="/dashboard" element={<Dashboard />} /> */}
           </Route>
 
           {/* =============================
@@ -103,6 +108,7 @@ export default function App() {
         </Route>
         {/* </Route> */}
       </Routes>
+        <ChatWidget /> 
     </BrowserRouter>
   );
 }

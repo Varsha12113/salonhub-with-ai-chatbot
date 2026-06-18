@@ -46,11 +46,28 @@ export default function Booking() {
       : [],
   }));
 
-
-
+// ── Resume booking after redirect-to-login ──
+  useEffect(() => {
+    if (location.state?.resumeBooking && location.state?.formData) {
+      setFormData(prev => ({ ...prev, ...location.state.formData }));
+      setStep(4);
+    }
+  }, [location.state]);
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
+
+// ── Autofill contact fields once user becomes available ──
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        username: prev.username || user.username || "",
+        phone: prev.phone || user.phone || "",
+        email: prev.email || user.email || "",
+      }));
+    }
+  }, [user]);
 
  const handleChange = (field, value) => {
   setFormData(prev => ({
@@ -290,10 +307,10 @@ function Step3Time({ formData, onChange, onNext, onPrev }) {
   const { slotsByDate, loading, error } = useSelector(
     (state) => state.scheduler
   );
-
+  const user = useSelector((state) => state.auth.user);
   useEffect(() => {
     if (selectedDate) {
-      dispatch(fetchSlotsByDate(selectedDate));
+       dispatch(fetchSlotsByDate({ date: selectedDate, isAdmin: false }));
     }
   }, [selectedDate, dispatch]);
 
@@ -316,6 +333,18 @@ function Step3Time({ formData, onChange, onNext, onPrev }) {
         `${slot.slot_master.start_time} - ${slot.slot_master.end_time}`
       );
       onChange("date", slot.slot_date); // ✅ store slot_date too
+
+       if (!user) {
+      // Not logged in — send to login, remember where to come back to
+      navigate("/login", {
+        state: {
+          from: location.pathname,
+          resumeBooking: true,
+          formData: { ...formData, slotId: slot.id, date: slot.slot_date },
+        },
+      });
+      return;
+    }
       onNext();
     }}
     className={`px-3 py-2 rounded border ${
@@ -557,21 +586,19 @@ useEffect(() => {
           </p>
           {/* ── Price summary ── */}
           <div className="mt-4 p-4 bg-purple-50 rounded-lg">
-            <div className="flex justify-between text-sm">
-              <span>Subtotal</span>
-              <span>₹{bookingData.total_price}</span>
-            </div>
-            <div className="flex justify-between text-sm mt-1">
-              <span>GST (18%)</span>
-              <span>
-                ₹{(bookingData.total_price * 0.18).toFixed(2)}
-              </span>
-            </div>
-            <div className="flex justify-between font-bold text-base mt-2 border-t pt-2">
-              <span>Total</span>
-              <span>₹{bookingData.total_price}</span>
-            </div>
+          <div className="flex justify-between text-sm">
+            <span>Subtotal</span>
+            <span>₹{bookingData.total_price}</span>  {/* 500 */}
           </div>
+          <div className="flex justify-between text-sm mt-1">
+            <span>GST (18%)</span>
+            <span>₹{bookingData.gst_amount}</span>   {/* 90 — use backend value, not recalculate */}
+          </div>
+          <div className="flex justify-between font-bold text-base mt-2 border-t pt-2">
+            <span>Total</span>
+            <span>₹{bookingData.grand_total}</span>  {/* 590 — use grand_total not total_price */}
+          </div>
+       </div>
         </div>
 
         {/* Error message */}

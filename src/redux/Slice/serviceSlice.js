@@ -110,12 +110,13 @@ export const createChildService = createAsyncThunk(
 
       return { mainId, data: res.data };
     } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
-    }
+  console.error("CREATE CHILD ERROR:", err.response?.status, err.response?.data);
+  return rejectWithValue(err.response?.data || err.message);
+}
   }
 );
 
-//7️⃣ Update a child service
+// 7️⃣ Update a child service — fix header
 export const updateChildService = createAsyncThunk(
   "services/updateChildService",
   async ({ mainId, childId, data }, { rejectWithValue }) => {
@@ -127,11 +128,10 @@ export const updateChildService = createAsyncThunk(
         }
       });
 
-
-
-      const res = await api.put(
+      const res = await api.patch(    // ← patch not put
         `/api/services/admin/main/${mainId}/child/${childId}/`,
-        formData
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }  // ← required for image
       );
 
       return { mainId, data: res.data };
